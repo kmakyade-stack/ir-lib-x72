@@ -25,11 +25,11 @@ select{font-family:inherit; font-size:12px; padding:8px; border:1px solid var(--
 .arrow{color:var(--gray-m); width:10px; display:inline-block; transition:transform .15s;}
 .open .arrow{transform:rotate(90deg);}
 .cname{font-weight:700;}
-.code{color:var(--gray-m);}
-.houjin{color:var(--gray-m); font-family:inherit;}
+.houjin{color:var(--gray-m);}
 .copybtn{font-family:inherit; font-size:11px; padding:2px 8px; border:1px solid var(--gray-l); border-radius:4px; background:#fff; color:var(--gray-m); cursor:pointer;}
 .copybtn:hover{border-color:var(--olive); color:var(--olive);}
 .copybtn.done{border-color:var(--olive); color:var(--olive);}
+.fin{font-size:11px; color:var(--black); white-space:nowrap;}
 .badge{margin-left:auto; font-size:11px; color:var(--gray-m); border:1px solid var(--gray-l); border-radius:10px; padding:1px 8px; white-space:nowrap;}
 .newmark{color:var(--red); font-size:11px; font-weight:700;}
 .docs{display:none; padding:0 12px 10px 30px;}
@@ -39,9 +39,9 @@ select{font-family:inherit; font-size:12px; padding:8px; border:1px solid var(--
 .kind.k2{border-color:var(--gray-m); color:var(--gray-m);}
 .kind.k3{border-color:var(--black); color:var(--black);}
 .doc a{color:var(--olive); font-weight:700; text-decoration:none;}
+.doc a:hover{text-decoration:underline;}
 .savetag{font-size:10px; margin-left:6px; padding:1px 6px; border-radius:8px; background:var(--olive); color:#fff;}
 .searchtag{font-size:10px; margin-left:6px; padding:1px 6px; border-radius:8px; border:1px solid var(--gray-l); color:var(--gray-m);}
-.doc a:hover{text-decoration:underline;}
 .ddate{color:var(--gray-m); margin-left:8px;}
 .dsum{color:var(--gray-m); margin-top:3px; line-height:1.6;}
 .dsum.ready{color:var(--black);}
@@ -71,6 +71,8 @@ footer{color:var(--gray-m); margin-top:24px; font-size:11px;}
   </select>
   <select id="sort">
     <option value="recent">新着順</option>
+    <option value="mcap">時価総額順</option>
+    <option value="rev">売上順</option>
     <option value="code">コード順</option>
     <option value="name">名前順</option>
   </select>
@@ -85,12 +87,14 @@ const PER=50;
 const norm = s => (s||"").toLowerCase().replace(/[Ａ-Ｚａ-ｚ０-９]/g, c => String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/　/g," ");
 
 async function load(){
-  const [c, d, m] = await Promise.all([
+  const [c, d, m, f] = await Promise.all([
     fetch("data/companies.json").then(r=>r.json()),
     fetch("data/documents.json").then(r=>r.json()),
-    fetch("data/meta.json").then(r=>r.json()).catch(()=>({updated:""}))
+    fetch("data/meta.json").then(r=>r.json()).catch(()=>({updated:""})),
+    fetch("data/finance.json").then(r=>r.json()).catch(()=>({}))
   ]);
   COMPANIES=c; DOCS=d;
+  COMPANIES.forEach(x=>{const v=f[x.code]||{}; x.mcap=v.mcap||0; x.rev=v.rev||0; x.fy=v.fy||"";});
   const byCode={};
   DOCS.forEach(x=>{(byCode[x.code]=byCode[x.code]||[]).push(x);});
   COMPANIES.forEach(x=>{
@@ -99,7 +103,7 @@ async function load(){
     x.blob=norm(x.name+" "+x.display+" "+x.code+" "+x.houjin+" "+x.docs.map(d=>d.title+" "+d.summary).join(" "));
   });
   document.getElementById("foot").textContent=
-    "データソース：TDnet適時開示・EDINETコードリスト（法人番号）・JPX上場銘柄一覧。最終更新 "+(m.updated||"—");
+    "データソース：TDnet適時開示・EDINETコードリスト（法人番号）・JPX上場銘柄一覧・Yahoo Finance（売上・時価総額）。最終更新 "+(m.updated||"—");
   render();
 }
 function filtered(){
@@ -114,11 +118,14 @@ function filtered(){
   );
   const s=document.getElementById("sort").value;
   if(s==="recent") r.sort((a,b)=>b.latest.localeCompare(a.latest));
+  else if(s==="mcap") r.sort((a,b)=>b.mcap-a.mcap);
+  else if(s==="rev") r.sort((a,b)=>b.rev-a.rev);
   else if(s==="code") r.sort((a,b)=>a.code.localeCompare(b.code));
   else r.sort((a,b)=>a.display.localeCompare(b.display,"ja"));
   return r;
 }
 function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function oku(v){const o=v/1e8; return o>=10?Math.round(o).toLocaleString():o.toFixed(1);}
 const cut=(new Date(Date.now()-14*864e5)).toISOString().slice(0,10);
 const staleCut=(new Date(Date.now()-25*864e5)).toISOString().slice(0,10);
 function docLink(x,d){
@@ -148,8 +155,18 @@ function render(){
       '<button class="copybtn" onclick="event.stopPropagation();cp(this,\''+esc(x.name)+'\')">名前コピー</button>'+
       '<span class="houjin">'+ (x.houjin||"法人番号確認中") +'</span>'+
       (x.houjin?'<button class="copybtn" onclick="event.stopPropagation();cp(this,\''+x.houjin+'\')">番号コピー</button>':'')+
+      '<span class="fin">'+(x.rev?"売上 "+oku(x.rev)+"億":"売上 —")+"／"+(x.mcap?"時総 "+oku(x.mcap)+"億":"時総 —")+'</span>'+
       '<span class="badge">'+x.market+" "+x.code+"｜資料"+x.docs.length+"件"+(x.latest?"｜最新 "+x.latest:"")+'</span>'+
       '</div><div class="docs">'+(docs||'<p class="dsum" style="padding:8px 0">対象資料なし</p>')+'</div></div>';
   }).join("") : '<p class="empty">該当する企業がありません</p>';
   document.getElementById("pager").innerHTML = pages>1?
-    '<butt
+    '<button onclick="mv(-1)" '+(page===0?"disabled":"")+'>前へ</button><button disabled>'+(page+1)+" / "+pages+'</button><button onclick="mv(1)" '+(page===pages-1?"disabled":"")+'>次へ</button>':"";
+}
+function tg(c){document.getElementById("c"+c).classList.toggle("open");}
+function cp(b,t){navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent="✓ コピー済";b.classList.add("done");setTimeout(()=>{b.textContent=o;b.classList.remove("done");},900);});}
+function mv(d){page+=d;render();window.scrollTo(0,0);}
+["q","kind","market","sort"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{page=0;render();}));
+load();
+</script>
+</body>
+</html>
