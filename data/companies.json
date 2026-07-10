@@ -4814,5 +4814,1004 @@
   "houjin": "1010401056795",
   "market": "プライム",
   "edinet": "E02778"
+ },
+ {
+  "code": "157A",
+  "name": "グリーンモンスター株式会社",
+  "display": "グリーンモンスター",
+  "houjin": "8011001096069",
+  "market": "グロース",
+  "edinet": "E39408",
+  "src": "it-screen"
+ },
+ {
+  "code": "195A",
+  "name": "株式会社ＭＵＳＣＡＴ　ＧＲＯＵＰ",
+  "display": "ＭＵＳＣＡＴ　ＧＲＯＵＰ",
+  "houjin": "2011101076579",
+  "market": "グロース",
+  "edinet": "E39662",
+  "src": "it-screen"
+ },
+ {
+  "code": "2120",
+  "name": "株式会社ＬＩＦＵＬＬ",
+  "display": "ＬＩＦＵＬＬ",
+  "houjin": "1010401091628",
+  "market": "プライム",
+  "edinet": "E05624",
+  "src": "it-screen"
+ },
+ {
+  "code": "2122",
+  "name": "株式会社インタースペース",
+  "display": "インタースペース",
+  "houjin": "8011101028715",
+  "market": "スタンダード",
+  "edinet": "E05623",
+  "src": "it-screen"
+ },
+ {
+  "code": "2130",
+  "name": "株式会社メンバーズ",
+  "display": "メンバーズ",
+  "houjin": "7010701022764",
+  "market": "プライム",
+  "edinet": "E05153",
+  "src": "it-screen"
+ },
+ {
+  "code": "2148",
+  "name": "アイティメディア株式会社",
+  "display": "アイティメディア",
+  "houjin": "1010001092299",
+  "market": "プライム",
+  "edinet": "E05686",
+  "src": "it-screen"
+ },
+ {
+  "code": "2158",
+  "name": "株式会社ＦＲＯＮＴＥＯ",
+  "display": "ＦＲＯＮＴＥＯ",
+  "houjin": "1010401051219",
+  "market": "グロース",
+  "edinet": "E05700",
+  "src": "it-screen"
+ },
+ {
+  "code": "2162",
+  "name": "ｎｍｓホールディングス株式会社",
+  "display": "ｎｍｓ　ホールディングス",
+  "houjin": "7011101037766",
+  "market": "スタンダード",
+  "edinet": "E05676",
+  "src": "it-screen"
+ },
+ {
+  "code": "2169",
+  "name": "ＣＤＳ株式会社",
+  "display": "ＣＤＳ",
+  "houjin": "9180301001381",
+  "market": "スタンダード",
+  "edinet": "E05726",
+  "src": "it-screen"
+ },
+ {
+  "code": "2185",
+  "name": "株式会社シイエム・シイ",
+  "display": "シイエム・シイ",
+  "houjin": "4180001036617",
+  "market": "スタンダード",
+  "edinet": "E22042",
+  "src": "it-screen"
+ },
+ {
+  "code": "2186",
+  "name": "ソーバル株式会社",
+  "display": "ソーバル",
+  "houjin": "9010801008257",
+  "market": "スタンダード",
+  "edinet": "E22049",
+  "src": "it-screen"
+ },
+ {
+  "code": "2193",
+  "name": "クックパッド株式会社",
+  "display": "クックパッド",
+  "houjin": "6010401071872",
+  "market": "スタンダード",
+  "edinet": "E22663",
+  "src": "it-screen"
+ },
+ {
+  "code": "2334",
+  "name": "株式会社イオレ",
+  "display": "イオレ",
+  "houjin": "3010901015200",
+  "market": "グロース",
+  "edinet": "E33595",
+  "src": "it-screen"
+ },
+ {
+  "code": "2371",
+  "name": "株式会社カカクコム",
+  "display": "カカクコム",
+  "houjin": "9011001065997",
+  "market": "プライム",
+  "edinet": "E05350",
+  "src": "it-screen"
+ },
+ {
+  "code": "2375",
+  "name": "ギグワークス株式会社",
+  "display": "ギグワークス",
+  "houjin": "5011101030772",
+  "market": "スタンダード",
+  "edinet": "E05356",
+  "src": "it-screen"
+ },
+ {
+  "code": "2379",
+  "name": "ディップ株式会社",
+  "display": "ディップ",
+  "houjin": "6010401050785",
+  "market": "プライム",
+  "edinet": "E05368",
+  "src": "it-screen"
+ },
+ {
+  "code": "2391",
+  "name": "株式会社プラネット",
+  "display": "プラネット",
+  "houjin": "5010401026654",
+  "market": "スタンダード",
+  "edinet": "E05378",
+  "src": "it-screen"
+ },
+ {
+  "code": "2428",
+  "name": "ウェルネット株式会社",
+  "display": "ウェルネット",
+  "houjin": "5010001125807",
+  "market": "スタンダード",
+  "edinet": "E05458",
+  "src": "it-screen"
+ },
+ {
+  "code": "2440",
+  "name": "株式会社ぐるなび",
+  "display": "ぐるなび",
+  "houjin": "1010001034565",
+  "market": "スタンダード",
+  "edinet": "E05456",
+  "src": "it-screen"
+ },
+ {
+  "code": "2454",
+  "name": "株式会社オールアバウト",
+  "display": "オールアバウト",
+  "houjin": "7011001034665",
+  "market": "スタンダード",
+  "edinet": "E05514",
+  "src": "it-screen"
+ },
+ {
+  "code": "2459",
+  "name": "アウンコンサルティング株式会社",
+  "display": "アウンコンサルティング",
+  "houjin": "4010001078254",
+  "market": "スタンダード",
+  "edinet": "E05527",
+  "src": "it-screen"
+ },
+ {
+  "code": "2469",
+  "name": "ヒビノ株式会社",
+  "display": "ヒビノ",
+  "houjin": "8010401025232",
+  "market": "スタンダード",
+  "edinet": "E05550",
+  "src": "it-screen"
+ },
+ {
+  "code": "2479",
+  "name": "株式会社ジェイテック",
+  "display": "ジェイテック",
+  "houjin": "9010001065586",
+  "market": "スタンダード",
+  "edinet": "E05569",
+  "src": "it-screen"
+ },
+ {
+  "code": "2488",
+  "name": "ＪＴＰ株式会社",
+  "display": "ＪＴＰ",
+  "houjin": "6010701025248",
+  "market": "スタンダード",
+  "edinet": "E05593",
+  "src": "it-screen"
+ },
+ {
+  "code": "2489",
+  "name": "株式会社アドウェイズ",
+  "display": "アドウェイズ",
+  "houjin": "7011101041652",
+  "market": "スタンダード",
+  "edinet": "E05599",
+  "src": "it-screen"
+ },
+ {
+  "code": "2491",
+  "name": "バリューコマース株式会社",
+  "display": "バリューコマース",
+  "houjin": "1010401062075",
+  "market": "プライム",
+  "edinet": "E05149",
+  "src": "it-screen"
+ },
+ {
+  "code": "2492",
+  "name": "株式会社インフォマート",
+  "display": "インフォマート",
+  "houjin": "2010401041383",
+  "market": "プライム",
+  "edinet": "E05609",
+  "src": "it-screen"
+ },
+ {
+  "code": "2493",
+  "name": "イーサポートリンク株式会社",
+  "display": "イーサポートリンク",
+  "houjin": "2013301018864",
+  "market": "スタンダード",
+  "edinet": "E05611",
+  "src": "it-screen"
+ },
+ {
+  "code": "2497",
+  "name": "ユナイテッド株式会社",
+  "display": "ユナイテッド",
+  "houjin": "6010401094782",
+  "market": "グロース",
+  "edinet": "E05562",
+  "src": "it-screen"
+ },
+ {
+  "code": "277A",
+  "name": "グロービング株式会社",
+  "display": "グロービング",
+  "houjin": "5011101079356",
+  "market": "プライム",
+  "edinet": "E40147",
+  "src": "it-screen"
+ },
+ {
+  "code": "299A",
+  "name": "クラシル株式会社",
+  "display": "クラシル",
+  "houjin": "2011001099829",
+  "market": "グロース",
+  "edinet": "E40236",
+  "src": "it-screen"
+ },
+ {
+  "code": "3021",
+  "name": "株式会社パシフィックネット",
+  "display": "パシフィックネット",
+  "houjin": "5010401054564",
+  "market": "スタンダード",
+  "edinet": "E03465",
+  "src": "it-screen"
+ },
+ {
+  "code": "331A",
+  "name": "株式会社メディックス",
+  "display": "メディックス",
+  "houjin": "7010001030732",
+  "market": "スタンダード",
+  "edinet": "E40420",
+  "src": "it-screen"
+ },
+ {
+  "code": "339A",
+  "name": "プログレス・テクノロジーズ　グループ株式会社",
+  "display": "プログレス・テクノロジーズ　グループ",
+  "houjin": "4010401153730",
+  "market": "グロース",
+  "edinet": "E40448",
+  "src": "it-screen"
+ },
+ {
+  "code": "410A",
+  "name": "ＧＭＯコマース株式会社",
+  "display": "ＧＭＯコマース",
+  "houjin": "5011001092582",
+  "market": "グロース",
+  "edinet": "E40916",
+  "src": "it-screen"
+ },
+ {
+  "code": "415A",
+  "name": "ＧＭＯ　ＴＥＣＨホールディングス株式会社",
+  "display": "ＧＭＯ　ＴＥＣＨホールディングス",
+  "houjin": "1011001172925",
+  "market": "グロース",
+  "edinet": "E40792",
+  "src": "it-screen"
+ },
+ {
+  "code": "4337",
+  "name": "ぴあ株式会社",
+  "display": "ぴあ",
+  "houjin": "1011001069980",
+  "market": "プライム",
+  "edinet": "E03379",
+  "src": "it-screen"
+ },
+ {
+  "code": "4341",
+  "name": "西菱電機株式会社",
+  "display": "西菱電機",
+  "houjin": "1140001078509",
+  "market": "スタンダード",
+  "edinet": "E05262",
+  "src": "it-screen"
+ },
+ {
+  "code": "446A",
+  "name": "株式会社ノースサンド",
+  "display": "ノースサンド",
+  "houjin": "6010601048200",
+  "market": "グロース",
+  "edinet": "E41104",
+  "src": "it-screen"
+ },
+ {
+  "code": "4755",
+  "name": "楽天グループ株式会社",
+  "display": "楽天グループ",
+  "houjin": "9010701020592",
+  "market": "プライム",
+  "edinet": "E05080",
+  "src": "it-screen"
+ },
+ {
+  "code": "4784",
+  "name": "ＧＭＯインターネット株式会社",
+  "display": "ＧＭＯインターネット",
+  "houjin": "1011001032872",
+  "market": "プライム",
+  "edinet": "E05123",
+  "src": "it-screen"
+ },
+ {
+  "code": "5868",
+  "name": "株式会社ロココ",
+  "display": "ロココ",
+  "houjin": "5120001092383",
+  "market": "スタンダード",
+  "edinet": "E39136",
+  "src": "it-screen"
+ },
+ {
+  "code": "5871",
+  "name": "ＳＯＬＩＺＥ　Ｈｏｌｄｉｎｇｓ株式会社",
+  "display": "ＳＯＬＩＺＥ　Ｈｏｌｄｉｎｇｓ",
+  "houjin": "1010001137277",
+  "market": "スタンダード",
+  "edinet": "E35118",
+  "src": "it-screen"
+ },
+ {
+  "code": "6030",
+  "name": "株式会社アドベンチャー",
+  "display": "アドベンチャー",
+  "houjin": "5011001050532",
+  "market": "グロース",
+  "edinet": "E31036",
+  "src": "it-screen"
+ },
+ {
+  "code": "6031",
+  "name": "ＺＥＴＡ株式会社",
+  "display": "ＺＥＴＡ",
+  "houjin": "3010701018824",
+  "market": "グロース",
+  "edinet": "E31089",
+  "src": "it-screen"
+ },
+ {
+  "code": "6033",
+  "name": "株式会社エクストリーム",
+  "display": "エクストリーム",
+  "houjin": "6013301021476",
+  "market": "グロース",
+  "edinet": "E31079",
+  "src": "it-screen"
+ },
+ {
+  "code": "6037",
+  "name": "楽待株式会社",
+  "display": "楽待",
+  "houjin": "4010401065075",
+  "market": "スタンダード",
+  "edinet": "E31248",
+  "src": "it-screen"
+ },
+ {
+  "code": "6046",
+  "name": "株式会社リンクバル",
+  "display": "リンクバル",
+  "houjin": "1010001143952",
+  "market": "スタンダード",
+  "edinet": "E31448",
+  "src": "it-screen"
+ },
+ {
+  "code": "6047",
+  "name": "株式会社Ｇｕｎｏｓｙ",
+  "display": "Ｇｕｎｏｓｙ",
+  "houjin": "5010401102810",
+  "market": "スタンダード",
+  "edinet": "E31454",
+  "src": "it-screen"
+ },
+ {
+  "code": "6049",
+  "name": "株式会社イトクロ",
+  "display": "イトクロ",
+  "houjin": "4010401062386",
+  "market": "グロース",
+  "edinet": "E31424",
+  "src": "it-screen"
+ },
+ {
+  "code": "6050",
+  "name": "イー・ガーディアン株式会社",
+  "display": "イー・ガーディアン",
+  "houjin": "2010401066249",
+  "market": "プライム",
+  "edinet": "E24917",
+  "src": "it-screen"
+ },
+ {
+  "code": "6054",
+  "name": "株式会社リブセンス",
+  "display": "リブセンス",
+  "houjin": "9011001063308",
+  "market": "スタンダード",
+  "edinet": "E26032",
+  "src": "it-screen"
+ },
+ {
+  "code": "6081",
+  "name": "アライドアーキテクツ株式会社",
+  "display": "アライドアーキテクツ",
+  "houjin": "5011001045516",
+  "market": "グロース",
+  "edinet": "E30053",
+  "src": "it-screen"
+ },
+ {
+  "code": "6098",
+  "name": "株式会社リクルートホールディングス",
+  "display": "リクルートホールディングス",
+  "houjin": "5010001060426",
+  "market": "プライム",
+  "edinet": "E07801",
+  "src": "it-screen"
+ },
+ {
+  "code": "6180",
+  "name": "ＧＭＯメディア株式会社",
+  "display": "ＧＭＯメディア",
+  "houjin": "6011001038592",
+  "market": "グロース",
+  "edinet": "E31854",
+  "src": "it-screen"
+ },
+ {
+  "code": "6182",
+  "name": "株式会社メタリアル",
+  "display": "メタリアル",
+  "houjin": "1010001088074",
+  "market": "グロース",
+  "edinet": "E31901",
+  "src": "it-screen"
+ },
+ {
+  "code": "6185",
+  "name": "ＳＭＮ株式会社",
+  "display": "ＳＭＮ",
+  "houjin": "3010701021828",
+  "market": "スタンダード",
+  "edinet": "E31958",
+  "src": "it-screen"
+ },
+ {
+  "code": "6191",
+  "name": "株式会社エアトリ",
+  "display": "エアトリ",
+  "houjin": "6010401072978",
+  "market": "プライム",
+  "edinet": "E32194",
+  "src": "it-screen"
+ },
+ {
+  "code": "6193",
+  "name": "バーチャレクス・ホールディングス株式会社",
+  "display": "バーチャレクス・ホールディングス",
+  "houjin": "3010401059383",
+  "market": "グロース",
+  "edinet": "E32203",
+  "src": "it-screen"
+ },
+ {
+  "code": "6532",
+  "name": "株式会社ベイカレント",
+  "display": "ベイカレント",
+  "houjin": "7010401111553",
+  "market": "プライム",
+  "edinet": "E32549",
+  "src": "it-screen"
+ },
+ {
+  "code": "6533",
+  "name": "株式会社Ｏｒｃｈｅｓｔｒａ　Ｈｏｌｄｉｎｇｓ",
+  "display": "Ｏｒｃｈｅｓｔｒａ　Ｈｏｌｄｉｎｇｓ",
+  "houjin": "3011001061184",
+  "market": "プライム",
+  "edinet": "E32601",
+  "src": "it-screen"
+ },
+ {
+  "code": "6535",
+  "name": "株式会社アイモバイル",
+  "display": "アイモバイル",
+  "houjin": "4011001059087",
+  "market": "プライム",
+  "edinet": "E32687",
+  "src": "it-screen"
+ },
+ {
+  "code": "6552",
+  "name": "株式会社ＧａｍｅＷｉｔｈ",
+  "display": "ＧａｍｅＷｉｔｈ",
+  "houjin": "2010401106079",
+  "market": "スタンダード",
+  "edinet": "E33254",
+  "src": "it-screen"
+ },
+ {
+  "code": "6554",
+  "name": "株式会社エスユーエス",
+  "display": "エスユーエス",
+  "houjin": "6130001017685",
+  "market": "グロース",
+  "edinet": "E33357",
+  "src": "it-screen"
+ },
+ {
+  "code": "6555",
+  "name": "株式会社ＭＳ＆Ｃｏｎｓｕｌｔｉｎｇ",
+  "display": "ＭＳ＆Ｃｏｎｓｕｌｔｉｎｇ",
+  "houjin": "3010001152084",
+  "market": "スタンダード",
+  "edinet": "E20870",
+  "src": "it-screen"
+ },
+ {
+  "code": "6560",
+  "name": "株式会社エル・ティー・エス",
+  "display": "エル・ティー・エス",
+  "houjin": "8011101053812",
+  "market": "プライム",
+  "edinet": "E33588",
+  "src": "it-screen"
+ },
+ {
+  "code": "6562",
+  "name": "株式会社ジーニー",
+  "display": "ジーニー",
+  "houjin": "7010401087406",
+  "market": "グロース",
+  "edinet": "E33615",
+  "src": "it-screen"
+ },
+ {
+  "code": "6572",
+  "name": "オープングループ株式会社",
+  "display": "オープングループ",
+  "houjin": "1010401098870",
+  "market": "プライム",
+  "edinet": "E33881",
+  "src": "it-screen"
+ },
+ {
+  "code": "6579",
+  "name": "ログリー株式会社",
+  "display": "ログリー",
+  "houjin": "9010001121488",
+  "market": "グロース",
+  "edinet": "E34082",
+  "src": "it-screen"
+ },
+ {
+  "code": "6786",
+  "name": "株式会社ＲＶＨ",
+  "display": "ＲＶＨ",
+  "houjin": "5020001030519",
+  "market": "スタンダード",
+  "edinet": "E02057",
+  "src": "it-screen"
+ },
+ {
+  "code": "7035",
+  "name": "ａｎｄ　ｆａｃｔｏｒｙ株式会社",
+  "display": "ａｎｄ　ｆａｃｔｏｒｙ",
+  "houjin": "7011001102001",
+  "market": "スタンダード",
+  "edinet": "E34238",
+  "src": "it-screen"
+ },
+ {
+  "code": "7036",
+  "name": "株式会社イーエムネットジャパン",
+  "display": "イーエムネットジャパン",
+  "houjin": "1011101066507",
+  "market": "グロース",
+  "edinet": "E34294",
+  "src": "it-screen"
+ },
+ {
+  "code": "7039",
+  "name": "ブリッジインターナショナル株式会社",
+  "display": "ブリッジインターナショナルグループ",
+  "houjin": "2010901015622",
+  "market": "グロース",
+  "edinet": "E34331",
+  "src": "it-screen"
+ },
+ {
+  "code": "7046",
+  "name": "ＴＤＳＥ株式会社",
+  "display": "ＴＤＳＥ",
+  "houjin": "2011001097163",
+  "market": "グロース",
+  "edinet": "E34487",
+  "src": "it-screen"
+ },
+ {
+  "code": "7047",
+  "name": "ポート株式会社",
+  "display": "ポート",
+  "houjin": "8011001069074",
+  "market": "グロース",
+  "edinet": "E34537",
+  "src": "it-screen"
+ },
+ {
+  "code": "7048",
+  "name": "ベルトラ株式会社",
+  "display": "ベルトラ",
+  "houjin": "2011101049188",
+  "market": "グロース",
+  "edinet": "E34508",
+  "src": "it-screen"
+ },
+ {
+  "code": "7060",
+  "name": "ギークス株式会社",
+  "display": "ギークス",
+  "houjin": "2011001061870",
+  "market": "スタンダード",
+  "edinet": "E34720",
+  "src": "it-screen"
+ },
+ {
+  "code": "7068",
+  "name": "フィードフォースグループ株式会社",
+  "display": "フィードフォースグループ",
+  "houjin": "7010001098357",
+  "market": "グロース",
+  "edinet": "E34995",
+  "src": "it-screen"
+ },
+ {
+  "code": "7072",
+  "name": "株式会社インティメート・マージャー",
+  "display": "インティメート・マージャー",
+  "houjin": "4010001154311",
+  "market": "グロース",
+  "edinet": "E35157",
+  "src": "it-screen"
+ },
+ {
+  "code": "7077",
+  "name": "株式会社ＡＬｉＮＫインターネット",
+  "display": "ＡＬｉＮＫインターネット",
+  "houjin": "6011001094074",
+  "market": "グロース",
+  "edinet": "E35288",
+  "src": "it-screen"
+ },
+ {
+  "code": "7082",
+  "name": "株式会社ジモティー",
+  "display": "ジモティー",
+  "houjin": "3011001068337",
+  "market": "グロース",
+  "edinet": "E35289",
+  "src": "it-screen"
+ },
+ {
+  "code": "7087",
+  "name": "株式会社ウイルテック",
+  "display": "ウイルテック",
+  "houjin": "3120001157048",
+  "market": "スタンダード",
+  "edinet": "E35470",
+  "src": "it-screen"
+ },
+ {
+  "code": "7093",
+  "name": "アディッシュ株式会社",
+  "display": "アディッシュ",
+  "houjin": "1010701029988",
+  "market": "グロース",
+  "edinet": "E35514",
+  "src": "it-screen"
+ },
+ {
+  "code": "7095",
+  "name": "株式会社Ｍａｃｂｅｅ　Ｐｌａｎｅｔ",
+  "display": "Ｍａｃｂｅｅ　Ｐｌａｎｅｔ",
+  "houjin": "7011001107074",
+  "market": "プライム",
+  "edinet": "E35534",
+  "src": "it-screen"
+ },
+ {
+  "code": "7351",
+  "name": "株式会社グッドパッチ",
+  "display": "グッドパッチ",
+  "houjin": "6010501033839",
+  "market": "グロース",
+  "edinet": "E35773",
+  "src": "it-screen"
+ },
+ {
+  "code": "7352",
+  "name": "株式会社ＴＷＯＳＴＯＮＥ＆Ｓｏｎｓ",
+  "display": "ＴＷＯＳＴＯＮＥ＆Ｓｏｎｓ",
+  "houjin": "2011001096974",
+  "market": "グロース",
+  "edinet": "E35767",
+  "src": "it-screen"
+ },
+ {
+  "code": "7356",
+  "name": "Ｒｅｔｔｙ株式会社",
+  "display": "Ｒｅｔｔｙ",
+  "houjin": "7010401090888",
+  "market": "グロース",
+  "edinet": "E35993",
+  "src": "it-screen"
+ },
+ {
+  "code": "7357",
+  "name": "株式会社ジオコード",
+  "display": "ジオコード",
+  "houjin": "4010401094677",
+  "market": "スタンダード",
+  "edinet": "E36078",
+  "src": "it-screen"
+ },
+ {
+  "code": "7361",
+  "name": "株式会社ヒューマンクリエイションホールディングス",
+  "display": "ヒューマンクリエイションホールディングス",
+  "houjin": "8010001178760",
+  "market": "グロース",
+  "edinet": "E36420",
+  "src": "it-screen"
+ },
+ {
+  "code": "7373",
+  "name": "株式会社アイドマ・ホールディングス",
+  "display": "アイドマ・ホールディングス",
+  "houjin": "6013301031269",
+  "market": "グロース",
+  "edinet": "E36648",
+  "src": "it-screen"
+ },
+ {
+  "code": "9168",
+  "name": "株式会社ライズ・コンサルティング・グループ",
+  "display": "ライズ・コンサルティング・グループ",
+  "houjin": "5010401156815",
+  "market": "グロース",
+  "edinet": "E38895",
+  "src": "it-screen"
+ },
+ {
+  "code": "9211",
+  "name": "株式会社エフ・コード",
+  "display": "エフ・コード",
+  "houjin": "7011101050802",
+  "market": "グロース",
+  "edinet": "E37176",
+  "src": "it-screen"
+ },
+ {
+  "code": "9215",
+  "name": "株式会社ＣａＳｙ",
+  "display": "ＣａＳｙ",
+  "houjin": "6010001158418",
+  "market": "グロース",
+  "edinet": "E37432",
+  "src": "it-screen"
+ },
+ {
+  "code": "9219",
+  "name": "株式会社ギックス",
+  "display": "ギックス",
+  "houjin": "8011001092828",
+  "market": "グロース",
+  "edinet": "E37546",
+  "src": "it-screen"
+ },
+ {
+  "code": "9240",
+  "name": "株式会社デリバリーコンサルティング",
+  "display": "デリバリーコンサルティング",
+  "houjin": "4010401054152",
+  "market": "グロース",
+  "edinet": "E36711",
+  "src": "it-screen"
+ },
+ {
+  "code": "9244",
+  "name": "株式会社デジタリフト",
+  "display": "デジタリフト",
+  "houjin": "8011301019084",
+  "market": "グロース",
+  "edinet": "E36961",
+  "src": "it-screen"
+ },
+ {
+  "code": "9245",
+  "name": "株式会社リベロ",
+  "display": "リベロ",
+  "houjin": "1010901024558",
+  "market": "グロース",
+  "edinet": "E36883",
+  "src": "it-screen"
+ },
+ {
+  "code": "9246",
+  "name": "株式会社プロジェクトホールディングス",
+  "display": "プロジェクトホールディングス",
+  "houjin": "8010401122459",
+  "market": "グロース",
+  "edinet": "E36896",
+  "src": "it-screen"
+ },
+ {
+  "code": "9250",
+  "name": "株式会社ＧＲＣＳ",
+  "display": "ＧＲＣＳ",
+  "houjin": "3010001097899",
+  "market": "グロース",
+  "edinet": "E36988",
+  "src": "it-screen"
+ },
+ {
+  "code": "9254",
+  "name": "株式会社ラバブルマーケティンググループ",
+  "display": "ラバブルマーケティンググループ",
+  "houjin": "3010401113149",
+  "market": "グロース",
+  "edinet": "E37159",
+  "src": "it-screen"
+ },
+ {
+  "code": "9337",
+  "name": "株式会社トリドリ",
+  "display": "トリドリ",
+  "houjin": "6011001111250",
+  "market": "グロース",
+  "edinet": "E38162",
+  "src": "it-screen"
+ },
+ {
+  "code": "9343",
+  "name": "株式会社アイビス",
+  "display": "アイビス",
+  "houjin": "7180001050326",
+  "market": "グロース",
+  "edinet": "E38440",
+  "src": "it-screen"
+ },
+ {
+  "code": "9348",
+  "name": "株式会社ｉｓｐａｃｅ",
+  "display": "ｉｓｐａｃｅ",
+  "houjin": "3030003001527",
+  "market": "グロース",
+  "edinet": "E37584",
+  "src": "it-screen"
+ },
+ {
+  "code": "9553",
+  "name": "株式会社マイクロアド",
+  "display": "マイクロアド",
+  "houjin": "5011001052933",
+  "market": "グロース",
+  "edinet": "E37742",
+  "src": "it-screen"
+ },
+ {
+  "code": "9554",
+  "name": "株式会社ＡＶｉＣ",
+  "display": "ＡＶｉＣ",
+  "houjin": "5012401024308",
+  "market": "グロース",
+  "edinet": "E37744",
+  "src": "it-screen"
+ },
+ {
+  "code": "9558",
+  "name": "ジャパニアス株式会社",
+  "display": "ジャパニアス",
+  "houjin": "6020001036275",
+  "market": "グロース",
+  "edinet": "E37911",
+  "src": "it-screen"
+ },
+ {
+  "code": "9561",
+  "name": "株式会社グラッドキューブ",
+  "display": "グラッドキューブ",
+  "houjin": "9120001129165",
+  "market": "グロース",
+  "edinet": "E37979",
+  "src": "it-screen"
+ },
+ {
+  "code": "9563",
+  "name": "Ａｔｌａｓ　Ｔｅｃｈｎｏｌｏｇｉｅｓ株式会社",
+  "display": "Ａｔｌａｓ　Ｔｅｃｈｎｏｌｏｇｉｅｓ",
+  "houjin": "8012401033578",
+  "market": "グロース",
+  "edinet": "E37985",
+  "src": "it-screen"
+ },
+ {
+  "code": "9564",
+  "name": "株式会社ＦＣＥ",
+  "display": "ＦＣＥ",
+  "houjin": "5011101080339",
+  "market": "スタンダード",
+  "edinet": "E38007",
+  "src": "it-screen"
+ },
+ {
+  "code": "9565",
+  "name": "ＧＬＯＥ株式会社",
+  "display": "ＧＬＯＥ",
+  "houjin": "3011001108349",
+  "market": "グロース",
+  "edinet": "E38155",
+  "src": "it-screen"
+ },
+ {
+  "code": "9715",
+  "name": "トランス・コスモス株式会社",
+  "display": "トランス・コスモス",
+  "houjin": "3011001041302",
+  "market": "プライム",
+  "edinet": "E04837",
+  "src": "it-screen"
  }
 ]
