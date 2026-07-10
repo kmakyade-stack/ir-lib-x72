@@ -8,6 +8,9 @@ REPO = sys.argv[1]
 DAYS = int(sys.argv[2]) if len(sys.argv) > 2 else 4
 KW = re.compile(r"中期経営計画|中期計画|中計(?!画)|決算説明|成長可能性|事業計画及び成長")
 EXCLUDE = re.compile(r"訂正|延期|開催|動画|書き起こし|質疑応答")
+KW2 = re.compile(r"株式取得|株式の取得|子会社化|株式譲受|事業譲受|吸収合併|合併契約|株式交換|株式移転|資本業務提携|公開買付|買収|株式譲渡|事業譲渡|持分取得|グループ化")
+EX2 = re.compile(r"自己株式|自社株|譲渡制限付|ストック・?オプション|新株予約権|訂正|進捗|買付け?の?結果|決済の開始|変更|終了|完了の?お知らせに関する|質疑")
+import html as _html
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
 
 def kind(t):
@@ -35,12 +38,18 @@ for i in range(DAYS):
         t = it["Tdnet"]
         code = t["company_code"][:4]
         title = t["title"]
-        if code in codes and KW.search(title) and not EXCLUDE.search(title):
-            url = (t.get("document_url") or "").replace("https://webapi.yanoshin.jp/rd.php?", "")
-            if (code, url) not in seen:
-                new.append({"code": code, "date": t["pubdate"][:10], "title": title,
-                            "kind": kind(title), "url": url, "summary": ""})
-                seen.add((code, url))
+        if code not in codes: continue
+        url = (t.get("document_url") or "").replace("https://webapi.yanoshin.jp/rd.php?", "")
+        if (code, url) in seen: continue
+        title_u = _html.unescape(title)
+        if KW.search(title) and not EXCLUDE.search(title):
+            new.append({"code": code, "date": t["pubdate"][:10], "title": title_u,
+                        "kind": kind(title), "url": url, "summary": ""})
+            seen.add((code, url))
+        elif KW2.search(title) and not EX2.search(title):
+            new.append({"code": code, "date": t["pubdate"][:10], "title": title_u,
+                        "kind": "M&A開示", "url": url, "summary": "", "ma": title_u})
+            seen.add((code, url))
     time.sleep(0.5)
 
 # 中計・成長可能性はReleasesへ永続保存
