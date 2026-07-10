@@ -39,6 +39,8 @@ select{font-family:inherit; font-size:12px; padding:8px; border:1px solid var(--
 .kind.k2{border-color:var(--gray-m); color:var(--gray-m);}
 .kind.k3{border-color:var(--black); color:var(--black);}
 .doc a{color:var(--olive); font-weight:700; text-decoration:none;}
+.savetag{font-size:10px; margin-left:6px; padding:1px 6px; border-radius:8px; background:var(--olive); color:#fff;}
+.searchtag{font-size:10px; margin-left:6px; padding:1px 6px; border-radius:8px; border:1px solid var(--gray-l); color:var(--gray-m);}
 .doc a:hover{text-decoration:underline;}
 .ddate{color:var(--gray-m); margin-left:8px;}
 .dsum{color:var(--gray-m); margin-top:3px; line-height:1.6;}
@@ -118,6 +120,12 @@ function filtered(){
 }
 function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 const cut=(new Date(Date.now()-14*864e5)).toISOString().slice(0,10);
+const staleCut=(new Date(Date.now()-25*864e5)).toISOString().slice(0,10);
+function docLink(x,d){
+  if(d.archive) return {href:d.archive, tag:'<span class="savetag">保存版</span>'};
+  if(d.date>=staleCut) return {href:d.url, tag:""};
+  return {href:"https://www.google.com/search?q="+encodeURIComponent('"'+x.display.replace(/\s/g,"")+'" '+d.title), tag:'<span class="searchtag">検索</span>'};
+}
 function render(){
   const r=filtered();
   const k=document.getElementById("kind").value;
@@ -130,8 +138,9 @@ function render(){
     const docs=x.docs.filter(d=>!k||d.kind===k).map(d=>{
       const kc=d.kind==="決算説明資料"?"k2":(d.kind==="成長可能性"?"":"k3");
       const sum=d.summary?'<p class="dsum ready">'+esc(d.summary)+'</p>':'<p class="dsum">要約準備中</p>';
+      const lk=docLink(x,d);
       return '<div class="doc"><span class="kind '+kc+'">'+d.kind+'</span><div>'+
-        '<a href="'+esc(d.url)+'" target="_blank" rel="noopener">'+esc(d.title)+'</a>'+
+        '<a href="'+esc(lk.href)+'" target="_blank" rel="noopener">'+esc(d.title)+'</a>'+lk.tag+
         '<span class="ddate">'+d.date+'</span>'+(d.date>=cut?' <span class="newmark">NEW</span>':'')+sum+'</div></div>';
     }).join("");
     return '<div class="company" id="c'+x.code+'"><div class="chead" onclick="tg(\''+x.code+'\')">'+
@@ -143,13 +152,4 @@ function render(){
       '</div><div class="docs">'+(docs||'<p class="dsum" style="padding:8px 0">対象資料なし</p>')+'</div></div>';
   }).join("") : '<p class="empty">該当する企業がありません</p>';
   document.getElementById("pager").innerHTML = pages>1?
-    '<button onclick="mv(-1)" '+(page===0?"disabled":"")+'>前へ</button><button disabled>'+(page+1)+" / "+pages+'</button><button onclick="mv(1)" '+(page===pages-1?"disabled":"")+'>次へ</button>':"";
-}
-function tg(c){document.getElementById("c"+c).classList.toggle("open");}
-function cp(b,t){navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent="✓ コピー済";b.classList.add("done");setTimeout(()=>{b.textContent=o;b.classList.remove("done");},900);});}
-function mv(d){page+=d;render();window.scrollTo(0,0);}
-["q","kind","market","sort"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{page=0;render();}));
-load();
-</script>
-</body>
-</html>
+    '<butt
