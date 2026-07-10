@@ -42,6 +42,12 @@ select{font-family:inherit; font-size:12px; padding:8px; border:1px solid var(--
 .doc a:hover{text-decoration:underline;}
 .savetag{font-size:10px; margin-left:6px; padding:1px 6px; border-radius:8px; background:var(--olive); color:#fff;}
 .searchtag{font-size:10px; margin-left:6px; padding:1px 6px; border-radius:8px; border:1px solid var(--gray-l); color:var(--gray-m);}
+.matag{font-size:10px; padding:1px 6px; border-radius:8px; border:1px solid var(--red); color:var(--red); font-weight:700; white-space:nowrap;}
+.mabox{border:1px solid var(--gray-l); border-radius:4px; padding:8px 10px; margin:4px 0 6px;}
+.mabox h3{font-size:12px; color:var(--red); margin-bottom:4px;}
+.maitem{line-height:1.6; margin-bottom:3px;}
+.maitem .md{color:var(--gray-m); margin-left:6px; font-size:11px;}
+.machk{display:flex; align-items:center; gap:4px; font-size:12px; color:var(--black); white-space:nowrap; cursor:pointer;}
 .ddate{color:var(--gray-m); margin-left:8px;}
 .dsum{color:var(--gray-m); margin-top:3px; line-height:1.6;}
 .dsum.ready{color:var(--black);}
@@ -69,6 +75,7 @@ footer{color:var(--gray-m); margin-top:24px; font-size:11px;}
     <option>スタンダード</option>
     <option>グロース</option>
   </select>
+  <label class="machk"><input type="checkbox" id="maonly">M&A言及あり</label>
   <select id="sort">
     <option value="recent">新着順</option>
     <option value="mcap">時価総額順</option>
@@ -100,7 +107,7 @@ async function load(){
   COMPANIES.forEach(x=>{
     x.docs=(byCode[x.code]||[]).sort((a,b)=>b.date.localeCompare(a.date));
     x.latest=x.docs.length?x.docs[0].date:"";
-    x.blob=norm(x.name+" "+x.display+" "+x.code+" "+x.houjin+" "+x.docs.map(d=>d.title+" "+d.summary).join(" "));
+    x.blob=norm(x.name+" "+x.display+" "+x.code+" "+x.houjin+" "+x.docs.map(d=>d.title+" "+d.summary+" "+(d.ma||"")).join(" "));
   });
   document.getElementById("foot").textContent=
     "データソース：TDnet適時開示・EDINETコードリスト（法人番号）・JPX上場銘柄一覧・Yahoo Finance（売上・時価総額）。最終更新 "+(m.updated||"—");
@@ -114,7 +121,8 @@ function filtered(){
   let r=COMPANIES.filter(x=>
     terms.every(t=>x.blob.includes(t)) &&
     (!mk||x.market===mk) &&
-    (!k||x.docs.some(d=>d.kind===k))
+    (!k||x.docs.some(d=>d.kind===k)) &&
+    (!document.getElementById("maonly").checked||x.docs.some(d=>d.ma))
   );
   const s=document.getElementById("sort").value;
   if(s==="recent") r.sort((a,b)=>b.latest.localeCompare(a.latest));
@@ -135,6 +143,12 @@ function docLink(x,d){
   const gq="https://www.google.com/search?q="+encodeURIComponent('"'+x.display.replace(/\s/g,"")+'" '+d.title);
   return {href:mirror, tag:'<a class="searchtag" href="'+gq+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="ミラーが開けない場合はこちら">検索</a>'};
 }
+function maBox(x){
+  const items=x.docs.filter(d=>d.ma);
+  if(!items.length) return "";
+  return '<div class="mabox"><h3>M&A関連の言及</h3>'+items.map(d=>
+    '<p class="maitem">'+esc(d.ma)+'<span class="md">（'+d.kind+'・'+d.date+'）</span></p>').join("")+'</div>';
+}
 function render(){
   const r=filtered();
   const k=document.getElementById("kind").value;
@@ -154,12 +168,13 @@ function render(){
     }).join("");
     return '<div class="company" id="c'+x.code+'"><div class="chead" onclick="tg(\''+x.code+'\')">'+
       '<span class="arrow">▶</span><span class="cname">'+esc(x.name)+'</span>'+
+      (x.docs.some(d=>d.ma)?'<span class="matag">M&A</span>':'')+
       '<button class="copybtn" onclick="event.stopPropagation();cp(this,\''+esc(x.name)+'\')">名前コピー</button>'+
       '<span class="houjin">'+ (x.houjin||"法人番号確認中") +'</span>'+
       (x.houjin?'<button class="copybtn" onclick="event.stopPropagation();cp(this,\''+x.houjin+'\')">番号コピー</button>':'')+
       '<span class="fin">'+(x.rev?"売上 "+oku(x.rev)+"億":"売上 —")+"／"+(x.mcap?"時総 "+oku(x.mcap)+"億":"時総 —")+'</span>'+
       '<span class="badge">'+x.market+" "+x.code+"｜資料"+x.docs.length+"件"+(x.latest?"｜最新 "+x.latest:"")+'</span>'+
-      '</div><div class="docs">'+(docs||'<p class="dsum" style="padding:8px 0">対象資料なし</p>')+'</div></div>';
+      '</div><div class="docs">'+maBox(x)+(docs||'<p class="dsum" style="padding:8px 0">対象資料なし</p>')+'</div></div>';
   }).join("") : '<p class="empty">該当する企業がありません</p>';
   document.getElementById("pager").innerHTML = pages>1?
     '<button onclick="mv(-1)" '+(page===0?"disabled":"")+'>前へ</button><button disabled>'+(page+1)+" / "+pages+'</button><button onclick="mv(1)" '+(page===pages-1?"disabled":"")+'>次へ</button>':"";
@@ -167,7 +182,7 @@ function render(){
 function tg(c){document.getElementById("c"+c).classList.toggle("open");}
 function cp(b,t){navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent="✓ コピー済";b.classList.add("done");setTimeout(()=>{b.textContent=o;b.classList.remove("done");},900);});}
 function mv(d){page+=d;render();window.scrollTo(0,0);}
-["q","kind","market","sort"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{page=0;render();}));
+["q","kind","market","sort","maonly"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{page=0;render();}));
 load();
 </script>
 </body>
