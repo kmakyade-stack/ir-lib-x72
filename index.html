@@ -131,7 +131,9 @@ const staleCut=(new Date(Date.now()-25*864e5)).toISOString().slice(0,10);
 function docLink(x,d){
   if(d.archive) return {href:d.archive, tag:'<span class="savetag">保存版</span>'};
   if(d.date>=staleCut) return {href:d.url, tag:""};
-  return {href:"https://www.google.com/search?q="+encodeURIComponent('"'+x.display.replace(/\s/g,"")+'" '+d.title), tag:'<span class="searchtag">検索</span>'};
+  const mirror="https://f.irbank.net/pdf/"+d.date.replace(/-/g,"")+"/"+d.url.split("/").pop();
+  const gq="https://www.google.com/search?q="+encodeURIComponent('"'+x.display.replace(/\s/g,"")+'" '+d.title);
+  return {href:mirror, tag:'<a class="searchtag" href="'+gq+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="ミラーが開けない場合はこちら">検索</a>'};
 }
 function render(){
   const r=filtered();
