@@ -85,6 +85,10 @@ footer{color:var(--gray-m); margin-top:24px; font-size:11px;}
     <option value="code">コード順</option>
     <option value="name">名前順</option>
   </select>
+  <select id="dir" style="width:80px">
+    <option value="desc">降順</option>
+    <option value="asc">昇順</option>
+  </select>
 </div>
 <p class="meta" id="meta"></p>
 <div id="list"></div>
@@ -127,11 +131,14 @@ function filtered(){
     (!document.getElementById("maonly").checked||x.docs.some(d=>d.ma))
   );
   const s=document.getElementById("sort").value;
-  if(s==="recent") r.sort((a,b)=>b.latest.localeCompare(a.latest));
-  else if(s==="mcap") r.sort((a,b)=>b.mcap-a.mcap);
-  else if(s==="rev") r.sort((a,b)=>b.rev-a.rev);
-  else if(s==="code") r.sort((a,b)=>a.code.localeCompare(b.code));
-  else r.sort((a,b)=>a.display.localeCompare(b.display,"ja"));
+  const dir=document.getElementById("dir").value==="asc"?1:-1;
+  let cmp;
+  if(s==="recent") cmp=(a,b)=>a.latest.localeCompare(b.latest);
+  else if(s==="mcap") cmp=(a,b)=>a.mcap-b.mcap;
+  else if(s==="rev") cmp=(a,b)=>a.rev-b.rev;
+  else if(s==="code") cmp=(a,b)=>a.code.localeCompare(b.code);
+  else cmp=(a,b)=>a.display.localeCompare(b.display,"ja");
+  r.sort((a,b)=>dir*cmp(a,b));
   return r;
 }
 function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -184,7 +191,7 @@ function render(){
 function tg(c){document.getElementById("c"+c).classList.toggle("open");}
 function cp(b,t){navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent="✓ コピー済";b.classList.add("done");setTimeout(()=>{b.textContent=o;b.classList.remove("done");},900);});}
 function mv(d){page+=d;render();window.scrollTo(0,0);}
-["q","kind","market","sort","maonly"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{page=0;render();}));
+["q","kind","market","sort","dir","maonly"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{page=0;render();}));
 load();
 </script>
 </body>
