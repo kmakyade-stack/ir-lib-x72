@@ -8,7 +8,8 @@ REPO = sys.argv[1]
 DAYS = int(sys.argv[2]) if len(sys.argv) > 2 else 4
 KW = re.compile(r"中期経営計画|中期計画|中計(?!画)|決算説明|成長可能性|事業計画及び成長")
 EXCLUDE = re.compile(r"訂正|延期|開催|動画|書き起こし|質疑応答")
-KW2 = re.compile(r"株式取得|株式の取得|子会社化|株式譲受|事業譲受|吸収合併|合併契約|株式交換|株式移転|資本業務提携|公開買付|買収|株式譲渡|事業譲渡|持分取得|グループ化")
+KW2 = re.compile(r"株式取得|株式の取得|子会社化|株式譲受|事業譲受|吸収合併|合併契約|株式交換|株式移転|資本業務提携|公開買付|買収|株式譲渡|事業譲渡|持分取得|グループ化|解散|清算|会社分割|吸収分割|完全子会社化")
+KW_HOSOKU = re.compile(r"決算.*補足|補足.*資料|決算短信.*補足|説明会")
 EX2 = re.compile(r"自己株式|自社株|譲渡制限付|ストック・?オプション|新株予約権|訂正|進捗|買付け?の?結果|決済の開始|変更|終了|完了の?お知らせに関する|質疑")
 import html as _html
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
@@ -27,6 +28,7 @@ docs = json.load(open(f"{REPO}/data/documents.json"))
 seen = {(d["code"], d["url"]) for d in docs}
 cfg = json.load(open(f"{REPO}/../.secrets/github.json")) if os.path.exists(f"{REPO}/../.secrets/github.json") else None
 
+has_setsumei = {d["code"] for d in docs if d["kind"] in ("決算説明資料","中期経営計画","成長可能性")}
 new = []
 for i in range(DAYS):
     day = (date.today() - timedelta(days=i)).strftime("%Y%m%d")
@@ -50,6 +52,10 @@ for i in range(DAYS):
         elif KW2.search(title) and not EX2.search(title):
             new.append({"code": code, "date": t["pubdate"][:10], "title": title_u,
                         "kind": "M&A開示", "url": url, "summary": "", "ma": title_u})
+            seen.add((code, url))
+        elif code not in has_setsumei and KW_HOSOKU.search(title) and not EXCLUDE.search(title):
+            new.append({"code": code, "date": t["pubdate"][:10], "title": title_u,
+                        "kind": "決算説明資料", "url": url, "summary": ""})
             seen.add((code, url))
     time.sleep(0.5)
 
