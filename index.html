@@ -22,6 +22,7 @@ select{font-family:inherit; font-size:12px; padding:8px; border:1px solid var(--
 .company{border:1px solid var(--gray-l); border-radius:4px; margin-bottom:6px; background:#fff;}
 .chead{display:flex; align-items:center; gap:8px; padding:9px 12px; cursor:pointer; flex-wrap:wrap;}
 .chead:hover{background:#f6f6f5;}
+.selchk{cursor:pointer;}
 .arrow{color:var(--gray-m); width:10px; display:inline-block; transition:transform .15s;}
 .open .arrow{transform:rotate(90deg);}
 .cname{font-weight:700;}
@@ -56,8 +57,22 @@ select{font-family:inherit; font-size:12px; padding:8px; border:1px solid var(--
 .pager{display:flex; gap:8px; justify-content:center; margin:16px 0;}
 .pager button{font-family:inherit; font-size:12px; padding:6px 14px; border:1px solid var(--gray-l); border-radius:4px; background:#fff; cursor:pointer; color:var(--black);}
 .pager button:disabled{color:var(--gray-l); cursor:default;}
-footer{color:var(--gray-m); margin-top:24px; font-size:11px;}
+.ctlbtn{font-family:inherit; font-size:12px; padding:6px 14px; border:1px solid var(--gray-l); border-radius:4px; background:#fff; cursor:pointer; color:var(--black);}
+.ctlbtn:hover{border-color:var(--olive); color:var(--olive);}
+.ctlbtn:disabled{color:var(--gray-l); border-color:var(--gray-l); cursor:default;}
+.ctlbtn:disabled:hover{color:var(--gray-l); border-color:var(--gray-l);}
+.exclpanel{border:1px solid var(--gray-l); border-radius:4px; padding:10px 12px; margin-bottom:8px;}
+.exclrow{display:flex; align-items:center; gap:8px; padding:5px 0; border-bottom:1px solid var(--gray-l);}
+.exclrow:last-child{border-bottom:none;}
+.exclname{font-weight:700; flex:1;}
+.exclcount{color:var(--gray-m);}
+.excldrop{border:1px dashed var(--gray-m); border-radius:4px; padding:16px; text-align:center; color:var(--gray-m); margin-top:8px; cursor:pointer;}
+.excldrop.over{border-color:var(--olive); color:var(--olive);}
+.exclpre ul{margin:6px 0 6px 18px;}
+.exclmeta{color:var(--gray-m); margin-bottom:8px; line-height:1.8;}
+.exclmeta a{color:var(--gray-m); text-decoration:underline;}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
 </head>
 <body>
 <h1>IT上場企業 IRライブラリ</h1>
@@ -100,6 +115,20 @@ footer{color:var(--gray-m); margin-top:24px; font-size:11px;}
   <span style="align-self:center; color:var(--gray-m)">〜</span>
   <input type="number" id="mcmax" placeholder="max" style="width:90px; font-family:inherit; font-size:12px; padding:6px 8px; border:1px solid var(--gray-l); border-radius:4px">
 </div>
+<div class="controls" style="margin-bottom:4px" id="selControls">
+  <button class="ctlbtn" id="selAllBtn" onclick="selectAllFiltered()">すべて選択</button>
+  <button class="ctlbtn" id="selNoneBtn" onclick="deselectAll()">全て選択解除</button>
+  <button class="ctlbtn" id="csvBtn" onclick="exportCsv()" disabled>CSV出力（0社）</button>
+  <button class="ctlbtn" id="exclBtn" onclick="toggleExclPanel()">除外リスト</button>
+</div>
+<div class="exclpanel" id="exclPanel" style="display:none">
+  <div id="exclListArea"></div>
+  <div class="excldrop" id="exclDrop">ここにExcel/CSVをドロップ or クリックでファイル選択
+    <input type="file" id="exclFile" accept=".xlsx,.xls,.csv" style="display:none">
+  </div>
+  <div class="exclpre" id="exclPreview"></div>
+</div>
+<p class="exclmeta" id="exclmeta"></p>
 <p class="meta" id="meta"></p>
 <div id="list"></div>
 <div class="pager" id="pager"></div>
@@ -108,6 +137,11 @@ footer{color:var(--gray-m); margin-top:24px; font-size:11px;}
 let COMPANIES=[], DOCS=[], page=0;
 const PER=50;
 const norm = s => (s||"").toLowerCase().replace(/[Ａ-Ｚａ-ｚ０-９]/g, c => String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/　/g," ");
+
+let SELECTED=new Set();
+let EXCLISTS=[];
+let EXCL_INFO=[];
+let PENDING=null;
 
 async function load(){
   const [c, d, m, f] = await Promise.all([
@@ -127,6 +161,7 @@ async function load(){
   });
   document.getElementById("foot").textContent=
     "データソース：TDnet適時開示・EDINETコードリスト（法人番号）・JPX上場銘柄一覧・Yahoo Finance（売上・時価総額）。最終更新 "+(m.updated||"—");
+  loadExclists();
   render();
 }
 function filtered(){
@@ -142,6 +177,9 @@ function filtered(){
     inRange(x.rev/1e8, "revmin", "revmax") &&
     inRange(x.mcap/1e8, "mcmin", "mcmax")
   );
+  const applied=applyExclusion(r);
+  EXCL_INFO=applied.info;
+  r=applied.result;
   const s=document.getElementById("sort").value;
   const dir=document.getElementById("dir").value==="asc"?1:-1;
   let cmp;
@@ -160,7 +198,7 @@ function inRange(v,idMin,idMax){
   if(!v) return false;
   return (isNaN(lo)||v>=lo)&&(isNaN(hi)||v<=hi);
 }
-function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function oku(v){const o=v/1e8; return o>=10?Math.round(o).toLocaleString():o.toFixed(1);}
 const cut=(new Date(Date.now()-14*864e5)).toISOString().slice(0,10);
 const staleCut=(new Date(Date.now()-25*864e5)).toISOString().slice(0,10);
@@ -186,6 +224,7 @@ function render(){
   const slice=r.slice(page*PER,(page+1)*PER);
   document.getElementById("meta").innerHTML=
     "該当 <b>"+r.length.toLocaleString()+"</b> 社 ／ 全"+COMPANIES.length.toLocaleString()+"社・資料"+DOCS.length.toLocaleString()+"件";
+  document.getElementById("exclmeta").innerHTML=exclSummaryHtml();
   document.getElementById("list").innerHTML = slice.length? slice.map(x=>{
     const docs=x.docs.filter(d=>!k||d.kind===k).map(d=>{
       const kc=d.kind==="決算説明資料"?"k2":(d.kind==="成長可能性"?"":(d.kind==="M&A開示"?"k4":"k3"));
@@ -196,8 +235,10 @@ function render(){
         '<span class="ddate">'+d.date+'</span>'+(d.date>=cut?' <span class="newmark">NEW</span>':'')+sum+'</div></div>';
     }).join("");
     return '<div class="company" id="c'+x.code+'"><div class="chead" onclick="tg(\''+x.code+'\')">'+
+      '<input type="checkbox" class="selchk" onclick="event.stopPropagation()" onchange="toggleSel(\''+x.code+'\',this.checked)" '+(SELECTED.has(x.code)?"checked":"")+'>'+
       '<span class="arrow">▶</span><span class="cname">'+esc(x.name)+'</span>'+
       (x.docs.some(d=>d.ma)?'<span class="matag">M&A</span>':'')+
+      (x._nearTag?'<span class="matag">リスト近似</span>':'')+
       '<button class="copybtn" onclick="event.stopPropagation();cp(this,\''+esc(x.name)+'\')">名前コピー</button>'+
       '<span class="houjin">'+ (x.houjin||"法人番号確認中") +'</span>'+
       (x.houjin?'<button class="copybtn" onclick="event.stopPropagation();cp(this,\''+x.houjin+'\')">番号コピー</button>':'')+
@@ -207,11 +248,296 @@ function render(){
   }).join("") : '<p class="empty">該当する企業がありません</p>';
   document.getElementById("pager").innerHTML = pages>1?
     '<button onclick="mv(-1)" '+(page===0?"disabled":"")+'>前へ</button><button disabled>'+(page+1)+" / "+pages+'</button><button onclick="mv(1)" '+(page===pages-1?"disabled":"")+'>次へ</button>':"";
+  updateSelCount();
 }
 function tg(c){document.getElementById("c"+c).classList.toggle("open");}
 function cp(b,t){navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent="✓ コピー済";b.classList.add("done");setTimeout(()=>{b.textContent=o;b.classList.remove("done");},900);});}
 function mv(d){page+=d;render();window.scrollTo(0,0);}
+
+/* ---- 選択・CSV出力 ---- */
+function toggleSel(code,checked){
+  if(checked) SELECTED.add(code); else SELECTED.delete(code);
+  updateSelCount();
+}
+function selectAllFiltered(){
+  filtered().forEach(x=>SELECTED.add(x.code));
+  render();
+}
+function deselectAll(){
+  SELECTED.clear();
+  render();
+}
+function updateSelCount(){
+  const n=SELECTED.size;
+  const btn=document.getElementById("csvBtn");
+  if(!btn) return;
+  btn.textContent="CSV出力（"+n.toLocaleString()+"社）";
+  btn.disabled = n===0;
+}
+function csvEsc(v){
+  v = v==null? "" : String(v);
+  if(/[",\r\n]/.test(v)) return '"'+v.replace(/"/g,'""')+'"';
+  return v;
+}
+function exportCsv(){
+  if(!SELECTED.size) return;
+  const rows=filtered().filter(x=>SELECTED.has(x.code));
+  if(!rows.length) return;
+  const header=["正式商号","銘柄名","証券コード","法人番号","市場","売上億円","時価総額億円","M&A言及有無","照合用正規化社名"];
+  const lines=[header.map(csvEsc).join(",")];
+  rows.forEach(x=>{
+    lines.push([
+      x.name,
+      x.display,
+      x.code,
+      x.houjin||"",
+      x.market,
+      x.rev? (x.rev/1e8).toFixed(1) : "",
+      x.mcap? (x.mcap/1e8).toFixed(1) : "",
+      x.docs.some(d=>d.ma)?"あり":"",
+      normCorp(x.name)
+    ].map(csvEsc).join(","));
+  });
+  const csv="﻿"+lines.join("\r\n");
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob);
+  const dt=new Date();
+  const ymd=dt.getFullYear()+String(dt.getMonth()+1).padStart(2,"0")+String(dt.getDate()).padStart(2,"0");
+  const a=document.createElement("a");
+  a.href=url; a.download="IRライブラリ抽出_"+ymd+".csv";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ---- 正規化 ---- */
+function normCorp(s){
+  let t=(s||"").normalize("NFKC").toLowerCase();
+  t=t.replace(/[\s　]+/g,"");
+  t=t.replace(/(株式会社|（株）|\(株\)|㈱|\(有\)|有限会社|合同会社)/g,"");
+  return t;
+}
+function nearKey(s){
+  let t=normCorp(s);
+  let changed=true;
+  while(changed){
+    changed=false;
+    const t2=t.replace(/(ホールディングス|グループ|hd|カンパニー)$/i,"");
+    if(t2!==t){t=t2;changed=true;}
+  }
+  return t;
+}
+
+/* ---- 重複除外リスト ---- */
+function loadExclists(){
+  let raw=[];
+  try{ raw=JSON.parse(localStorage.getItem("ir_exclists")||"[]"); }catch(e){ raw=[]; }
+  EXCLISTS=(raw||[]).map(l=>({name:l.name||"", names:l.names||[], ts:l.ts||Date.now(), active:l.active!==false}));
+  EXCLISTS.forEach(computeListSets);
+}
+function computeListSets(l){
+  l.normSet=new Set(l.names.map(normCorp));
+  l.nearSet=new Set(l.names.map(nearKey));
+}
+function saveExclists(){
+  localStorage.setItem("ir_exclists", JSON.stringify(EXCLISTS.map(l=>({name:l.name,names:l.names,ts:l.ts,active:l.active}))));
+}
+function applyExclusion(companies){
+  const active=EXCLISTS.filter(l=>l.active);
+  if(!active.length){
+    companies.forEach(x=>{ x._nearTag=false; x._excluded=false; });
+    return {result:companies, info:[]};
+  }
+  const allNorm=new Set(), allNear=new Set();
+  active.forEach(l=>{ l.normSet.forEach(v=>allNorm.add(v)); l.nearSet.forEach(v=>allNear.add(v)); });
+  const result=[];
+  companies.forEach(x=>{
+    const n1=normCorp(x.display), n2=normCorp(x.name);
+    if(allNorm.has(n1)||allNorm.has(n2)){ x._excluded=true; x._nearTag=false; return; }
+    x._excluded=false;
+    const k1=nearKey(x.display), k2=nearKey(x.name);
+    x._nearTag = allNear.has(k1)||allNear.has(k2);
+    result.push(x);
+  });
+  const matchedNorms=new Set();
+  COMPANIES.forEach(x=>{ matchedNorms.add(normCorp(x.display)); matchedNorms.add(normCorp(x.name)); });
+  const info=active.map(l=>{
+    let exCount=0, nearCount=0;
+    COMPANIES.forEach(x=>{
+      const n1=normCorp(x.display), n2=normCorp(x.name);
+      if(l.normSet.has(n1)||l.normSet.has(n2)){ exCount++; return; }
+      const k1=nearKey(x.display), k2=nearKey(x.name);
+      if(l.nearSet.has(k1)||l.nearSet.has(k2)) nearCount++;
+    });
+    const unmatched=l.names.filter(nm=>!matchedNorms.has(normCorp(nm)));
+    return {name:l.name, exCount, nearCount, unmatched};
+  });
+  return {result, info};
+}
+function exclSummaryHtml(){
+  if(!EXCL_INFO || !EXCL_INFO.length) return "";
+  return EXCL_INFO.map((it,i)=>{
+    const unLabel = it.unmatched.length?
+      '<a href="javascript:void(0)" onclick="showUnmatched('+i+')">未収録'+it.unmatched.length.toLocaleString()+'社</a>' :
+      '未収録0社';
+    return '除外中：'+esc(it.name)+'（'+it.exCount.toLocaleString()+'社除外・近似'+it.nearCount.toLocaleString()+'社）／リストにあるが'+unLabel;
+  }).join("　");
+}
+function showUnmatched(i){
+  const it=EXCL_INFO[i];
+  if(!it) return;
+  if(!it.unmatched.length){ alert(it.name+"：未収録の企業はありません"); return; }
+  alert(it.name+"（未収録 "+it.unmatched.length+"社）\n"+it.unmatched.join("\n"));
+}
+
+/* ---- 除外リストパネル ---- */
+function toggleExclPanel(){
+  const p=document.getElementById("exclPanel");
+  const opening = p.style.display==="none"||!p.style.display;
+  p.style.display = opening? "block":"none";
+  if(opening) renderExclPanel();
+}
+function renderExclPanel(){
+  const area=document.getElementById("exclListArea");
+  area.innerHTML = EXCLISTS.length? EXCLISTS.map((l,i)=>
+    '<div class="exclrow">'+
+      '<input type="checkbox" '+(l.active?"checked":"")+' onchange="toggleExclActive('+i+',this.checked)">'+
+      '<span class="exclname">'+esc(l.name)+'</span>'+
+      '<span class="exclcount">'+l.names.length.toLocaleString()+'件</span>'+
+      '<button class="ctlbtn" onclick="deleteExcl('+i+')">削除</button>'+
+    '</div>'
+  ).join("") : '<p style="color:var(--gray-m)">登録済みリストはありません</p>';
+}
+function toggleExclActive(i,checked){
+  EXCLISTS[i].active=checked;
+  saveExclists();
+  render();
+}
+function deleteExcl(i){
+  EXCLISTS.splice(i,1);
+  saveExclists();
+  renderExclPanel();
+  render();
+}
+
+/* ---- ファイル読込 ---- */
+function colLetter(i){
+  let s="",n=i;
+  do{ s=String.fromCharCode(65+(n%26))+s; n=Math.floor(n/26)-1; }while(n>=0);
+  return s;
+}
+function handleExclFile(file){
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const data=new Uint8Array(ev.target.result);
+      const wb=XLSX.read(data,{type:"array"});
+      const wsname=wb.SheetNames[0];
+      const ws=wb.Sheets[wsname];
+      const rows=XLSX.utils.sheet_to_json(ws,{header:1, raw:false, defval:""});
+      analyzeExcl(rows, file.name);
+    }catch(e){
+      alert("ファイルの読み込みに失敗しました："+e.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+const HEADER_WORDS=["社名","企業名","会社名","名称","先名"];
+const CORP_RE=/(株式会社|（株）|\(株\)|㈱|有限会社|合同会社|\(有\))/;
+function analyzeExcl(rows, fileName){
+  rows=(rows||[]).filter(r=>r&&r.some(v=>String(v||"").trim()!==""));
+  if(!rows.length){ alert("データが見つかりませんでした"); return; }
+  const headerRow=rows[0];
+  let colIdx=-1;
+  for(let i=0;i<headerRow.length;i++){
+    const h=String(headerRow[i]||"");
+    if(HEADER_WORDS.some(w=>h.includes(w))){ colIdx=i; break; }
+  }
+  const hasHeader = colIdx>=0;
+  if(!hasHeader){
+    const ncols=Math.max(...rows.map(r=>r.length));
+    let best=0, bestCount=-1;
+    for(let c=0;c<ncols;c++){
+      let cnt=0;
+      rows.forEach(r=>{ if(CORP_RE.test(String(r[c]||""))) cnt++; });
+      if(cnt>bestCount){ bestCount=cnt; best=c; }
+    }
+    colIdx=best;
+  }
+  PENDING={rows, headerRow, hasHeader, colIdx, fileName};
+  recomputePendingNames();
+  showExclPreview();
+}
+function recomputePendingNames(){
+  const P=PENDING;
+  const dataRows = P.hasHeader? P.rows.slice(1) : P.rows;
+  P.names = dataRows.map(r=>String(r[P.colIdx]||"").trim()).filter(Boolean);
+}
+function showExclPreview(){
+  const P=PENDING;
+  const ncols=Math.max(...P.rows.map(r=>r.length));
+  let opts="";
+  for(let c=0;c<ncols;c++){
+    const label = P.hasHeader? (String(P.headerRow[c]||"").trim()||colLetter(c)) : colLetter(c);
+    opts+='<option value="'+c+'" '+(c===P.colIdx?"selected":"")+'>'+esc(label)+'</option>';
+  }
+  const colLabel = P.hasHeader? (colLetter(P.colIdx)+"列（"+esc(String(P.headerRow[P.colIdx]||""))+"）") : (colLetter(P.colIdx)+"列");
+  const preview5=P.names.slice(0,5).map(n=>'<li>'+esc(n)+'</li>').join("");
+  const defaultName=P.fileName.replace(/\.[^.]+$/,"");
+  document.getElementById("exclPreview").innerHTML=
+    '<p>'+colLabel+'から <b>'+P.names.length.toLocaleString()+'</b> 社を読み取りました</p>'+
+    '<ul>'+preview5+'</ul>'+
+    '<div class="controls" style="margin:8px 0">'+
+      '<span style="align-self:center;color:var(--gray-m)">列変更</span>'+
+      '<select id="exclColSel" onchange="changeExclCol(this.value)">'+opts+'</select>'+
+      '<span style="align-self:center;color:var(--gray-m)">リスト名</span>'+
+      '<input type="text" id="exclNameInput" value="'+esc(defaultName)+'" style="flex:1;min-width:160px;font-family:inherit;font-size:12px;padding:6px 8px;border:1px solid var(--gray-l);border-radius:4px">'+
+    '</div>'+
+    '<div class="controls">'+
+      '<button class="ctlbtn" onclick="registerExcl()">登録</button>'+
+      '<button class="ctlbtn" onclick="cancelExcl()">キャンセル</button>'+
+    '</div>';
+}
+function changeExclCol(v){
+  PENDING.colIdx=parseInt(v,10);
+  recomputePendingNames();
+  showExclPreview();
+}
+function cancelExcl(){
+  PENDING=null;
+  document.getElementById("exclPreview").innerHTML="";
+  document.getElementById("exclFile").value="";
+}
+function registerExcl(){
+  if(!PENDING) return;
+  const nameInput=document.getElementById("exclNameInput");
+  const listName=(nameInput.value||"").trim()||"無題リスト";
+  const names=PENDING.names.slice();
+  const entry={name:listName, names, ts:Date.now(), active:true};
+  computeListSets(entry);
+  const idx=EXCLISTS.findIndex(l=>l.name===listName);
+  if(idx>=0) EXCLISTS[idx]=entry; else EXCLISTS.push(entry);
+  saveExclists();
+  PENDING=null;
+  document.getElementById("exclPreview").innerHTML="";
+  document.getElementById("exclFile").value="";
+  renderExclPanel();
+  render();
+}
+
 ["q","kind","market","sort","dir","maonly","revmin","revmax","mcmin","mcmax"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{page=0;render();}));
+
+const exclDrop=document.getElementById("exclDrop");
+exclDrop.addEventListener("click",()=>document.getElementById("exclFile").click());
+exclDrop.addEventListener("dragover",e=>{e.preventDefault(); exclDrop.classList.add("over");});
+exclDrop.addEventListener("dragleave",()=>exclDrop.classList.remove("over"));
+exclDrop.addEventListener("drop",e=>{
+  e.preventDefault(); exclDrop.classList.remove("over");
+  if(e.dataTransfer.files && e.dataTransfer.files[0]) handleExclFile(e.dataTransfer.files[0]);
+});
+document.getElementById("exclFile").addEventListener("change",e=>{
+  if(e.target.files && e.target.files[0]) handleExclFile(e.target.files[0]);
+});
+
 load();
 </script>
 </body>
