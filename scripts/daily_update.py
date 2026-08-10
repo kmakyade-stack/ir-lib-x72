@@ -37,8 +37,8 @@ for i in range(DAYS):
     except Exception as e:
         print("day NG", day, str(e)[:60]); continue
     for it in data.get("items", []):
-        t = it.get("Tdnet")
-        if not t: continue
+        t = it.get("Tdnet") or it   # APIが素の形式/Tdnetラップ形式の両方を返すため両対応
+        if not t or not t.get("company_code"): continue
         code = t["company_code"][:4]
         title = t["title"]
         if code not in codes: continue
