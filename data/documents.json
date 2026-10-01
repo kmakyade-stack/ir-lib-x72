@@ -1,5 +1,77 @@
 [
  {
+  "code": "2323",
+  "date": "2026-10-01",
+  "title": "（開示事項の経過）連結子会社（株式会社YNP）によるインサイドグロース株式会社のカスタマー派遣事業譲受（吸収分割）の効力発生に関するお知らせ",
+  "kind": "M&A開示",
+  "url": "https://www.release.tdnet.info/inbs/140120261001544429.pdf",
+  "summary": "",
+  "ma": "（開示事項の経過）連結子会社（株式会社YNP）によるインサイドグロース株式会社のカスタマー派遣事業譲受（吸収分割）の効力発生に関するお知らせ"
+ },
+ {
+  "code": "2330",
+  "date": "2026-10-01",
+  "title": "(開示事項の経過)株式取得(完全子会社化)完了に関するお知らせ",
+  "kind": "M&A開示",
+  "url": "https://www.release.tdnet.info/inbs/140120261001544663.pdf",
+  "summary": "",
+  "ma": "(開示事項の経過)株式取得(完全子会社化)完了に関するお知らせ"
+ },
+ {
+  "code": "431A",
+  "date": "2026-10-01",
+  "title": "(開示事項の経過)Empire State株式会社の株式取得（子会社化）完了に関するお知らせ",
+  "kind": "M&A開示",
+  "url": "https://www.release.tdnet.info/inbs/140120260930543455.pdf",
+  "summary": "",
+  "ma": "(開示事項の経過)Empire State株式会社の株式取得（子会社化）完了に関するお知らせ"
+ },
+ {
+  "code": "410A",
+  "date": "2026-10-01",
+  "title": "（開示事項の経過）GMO NIKKO・ GMOインサイトの株式取得（子会社化）完了に関するお知らせ",
+  "kind": "M&A開示",
+  "url": "https://www.release.tdnet.info/inbs/140120260929541732.pdf",
+  "summary": "",
+  "ma": "（開示事項の経過）GMO NIKKO・ GMOインサイトの株式取得（子会社化）完了に関するお知らせ"
+ },
+ {
+  "code": "3690",
+  "date": "2026-10-01",
+  "title": "（開示事項の経過）完全子会社の吸収合併（簡易・略式合併）の完了に関するお知らせ",
+  "kind": "M&A開示",
+  "url": "https://www.release.tdnet.info/inbs/140120261001543806.pdf",
+  "summary": "",
+  "ma": "（開示事項の経過）完全子会社の吸収合併（簡易・略式合併）の完了に関するお知らせ"
+ },
+ {
+  "code": "3696",
+  "date": "2026-10-01",
+  "title": "（開示事項の経過）持分法適用関連会社の異動（株式譲渡）の完了に関するお知らせ",
+  "kind": "M&A開示",
+  "url": "https://www.release.tdnet.info/inbs/140120261001544143.pdf",
+  "summary": "",
+  "ma": "（開示事項の経過）持分法適用関連会社の異動（株式譲渡）の完了に関するお知らせ"
+ },
+ {
+  "code": "4261",
+  "date": "2026-10-01",
+  "title": "株式会社テトラ・コミュニケーションズの株式取得（子会社化）に関するお知らせ",
+  "kind": "M&A開示",
+  "url": "https://www.release.tdnet.info/inbs/140120260930543080.pdf",
+  "summary": "",
+  "ma": "株式会社テトラ・コミュニケーションズの株式取得（子会社化）に関するお知らせ"
+ },
+ {
+  "code": "4839",
+  "date": "2026-10-01",
+  "title": "（開示事項の経過）WOWOWとNTTドコモによる映像コンテンツ配信事業「Lemino」の吸収分割による合弁会社化の完了に関するお知らせ",
+  "kind": "M&A開示",
+  "url": "https://www.release.tdnet.info/inbs/140120260930543655.pdf",
+  "summary": "",
+  "ma": "（開示事項の経過）WOWOWとNTTドコモによる映像コンテンツ配信事業「Lemino」の吸収分割による合弁会社化の完了に関するお知らせ"
+ },
+ {
   "code": "4069",
   "date": "2026-09-30",
   "title": "2026年3月期 通期決算説明資料",
@@ -2609,7 +2681,8 @@
   "kind": "中期経営計画",
   "url": "https://www.release.tdnet.info/inbs/140120260814520843.pdf",
   "summary": "",
-  "archive": "https://github.com/kmakyade-stack/ir-lib-x72/releases/download/pdf-archive/140120260814520843.pdf"
+  "archive": "https://github.com/kmakyade-stack/ir-lib-x72/releases/download/pdf-archive/140120260814520843.pdf",
+  "extract_unavailable": true
  },
  {
   "code": "9467",
@@ -2890,7 +2963,8 @@
   "title": "2026年9月期第３四半期決算説明資料",
   "kind": "決算説明資料",
   "url": "https://www.release.tdnet.info/inbs/140120260813519816.pdf",
-  "summary": ""
+  "summary": "",
+  "extract_unavailable": true
  },
  {
   "code": "269A",
@@ -4847,7 +4921,8 @@
   "title": "2027年３月期 第１四半期決算説明資料",
   "kind": "決算説明資料",
   "url": "https://www.release.tdnet.info/inbs/140120260730503232.pdf",
-  "summary": ""
+  "summary": "",
+  "extract_unavailable": true
  },
  {
   "code": "4839",
@@ -20192,7 +20267,8 @@
   "title": "2026年２月期　第３四半期決算補足説明資料",
   "kind": "決算説明資料",
   "url": "https://www.release.tdnet.info/inbs/140120260113533075.pdf",
-  "summary": ""
+  "summary": "",
+  "extract_unavailable": true
  },
  {
   "code": "277A",
@@ -26842,7 +26918,8 @@
   "title": "2026年２月期　第２四半期決算補足説明資料",
   "kind": "決算説明資料",
   "url": "https://www.release.tdnet.info/inbs/140120251014573126.pdf",
-  "summary": ""
+  "summary": "",
+  "extract_unavailable": true
  },
  {
   "code": "277A",
@@ -33015,7 +33092,8 @@
   "title": "2026年２月期　第１四半期決算補足説明資料",
   "kind": "決算説明資料",
   "url": "https://www.release.tdnet.info/inbs/140120250715514712.pdf",
-  "summary": ""
+  "summary": "",
+  "extract_unavailable": true
  },
  {
   "code": "277A",
