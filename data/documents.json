@@ -1,5 +1,23 @@
 [
  {
+  "code": "460A",
+  "date": "2026-10-19",
+  "title": "事業計画及び成長可能性に関する説明資料",
+  "kind": "成長可能性",
+  "url": "https://www.release.tdnet.info/inbs/140120261019553108.pdf",
+  "summary": "",
+  "archive": "https://github.com/kmakyade-stack/ir-lib-x72/releases/download/pdf-archive/140120261019553108.pdf"
+ },
+ {
+  "code": "3839",
+  "date": "2026-10-19",
+  "title": "連結子会社による株式会社ミガロの株式取得（孫会社化）に関するお知らせ",
+  "kind": "M&A開示",
+  "url": "https://www.release.tdnet.info/inbs/140120261019552802.pdf",
+  "summary": "",
+  "ma": "連結子会社による株式会社ミガロの株式取得（孫会社化）に関するお知らせ"
+ },
+ {
   "code": "4728",
   "date": "2026-10-16",
   "title": "2026年８月期　決算説明資料（解説付）",
@@ -358,7 +376,8 @@
   "title": "2027年５月期 第１四半期決算説明資料",
   "kind": "決算説明資料",
   "url": "https://www.release.tdnet.info/inbs/140120261015551281.pdf",
-  "summary": ""
+  "summary": "",
+  "extract_unavailable": true
  },
  {
   "code": "5580",
@@ -422,7 +441,8 @@
   "title": "2026年８月期 通期決算説明資料",
   "kind": "決算説明資料",
   "url": "https://www.release.tdnet.info/inbs/140120261014550932.pdf",
-  "summary": ""
+  "summary": "",
+  "extract_unavailable": true
  },
  {
   "code": "7352",
