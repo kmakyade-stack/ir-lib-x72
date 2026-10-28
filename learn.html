@@ -145,6 +145,11 @@ details.gl .gi{margin-bottom:4px;}
 .acts .btn{padding:10px 16px;}
 .cover{border:1px dashed var(--gray-m); border-radius:4px; padding:16px; text-align:center; color:var(--gray-m); margin:10px 0;}
 .cover.go{cursor:pointer;}
+.seg{display:inline-flex; margin:0 0 8px;}
+.seg .btn{border-radius:0; margin-right:-1px;}
+.seg .btn:first-child{border-radius:4px 0 0 4px;}
+.seg .btn:last-child{border-radius:0 4px 4px 0;}
+.seg .btn.on{background:var(--black); color:var(--white); border-color:var(--black);}
 .cover.go:hover{border-color:var(--olive); color:var(--olive);}
 .fl-box{fill:var(--white); stroke:var(--black); stroke-width:1.5;}
 .fl-t{fill:var(--black); font-size:12px; font-family:"BIZ UDPGothic","BIZ UDPゴシック",sans-serif;}
@@ -753,15 +758,8 @@ function partReadMemo(c){
 }
 
 /* ===== B. 1社カード ===== */
-function renderCard(){
-  const root=$('v-card'); root.replaceChildren(); flowHosts=[];
-  const c=BY[S.c];
-  const bar=h('div',{cls:'nav',style:'margin:0 0 10px'},
-    h('button',{cls:'btn',type:'button',text:'← 一覧へ',onclick:function(){setTab('list');}}),
-    h('span',{cls:'meta',style:'margin:0',text:VIEW.indexOf(S.c)>=0?(VIEW.indexOf(S.c)+1)+' ／ '+VIEW.length:'（現在の絞り込みに含まれない社）'}));
-  root.appendChild(bar);
-  if(!c){ root.appendChild(h('p',{cls:'empty',text:'一覧から社名の行をクリックすると、ここに1社カードが開きます。'})); return; }
-  const card=h('div',{cls:'card'});
+/* 1社カードの中身（1社カードと暗記モードの「1社カード表示」で共通） */
+function fillCard(card,c){
   card.appendChild(partHead(c));
   if(c.p&&c.p.one_liner) card.appendChild(h('div',{cls:'oneliner',text:c.p.one_liner}));
   card.appendChild(partFin(c));
@@ -774,6 +772,17 @@ function renderCard(){
   const g=partGloss(c); if(g) card.appendChild(g);
   card.appendChild(partMA(c));
   card.appendChild(partReadMemo(c));
+}
+function renderCard(){
+  const root=$('v-card'); root.replaceChildren(); flowHosts=[];
+  const c=BY[S.c];
+  const bar=h('div',{cls:'nav',style:'margin:0 0 10px'},
+    h('button',{cls:'btn',type:'button',text:'← 一覧へ',onclick:function(){setTab('list');}}),
+    h('span',{cls:'meta',style:'margin:0',text:VIEW.indexOf(S.c)>=0?(VIEW.indexOf(S.c)+1)+' ／ '+VIEW.length:'（現在の絞り込みに含まれない社）'}));
+  root.appendChild(bar);
+  if(!c){ root.appendChild(h('p',{cls:'empty',text:'一覧から社名の行をクリックすると、ここに1社カードが開きます。'})); return; }
+  const card=h('div',{cls:'card'});
+  fillCard(card,c);
   root.appendChild(card);
   const i=VIEW.indexOf(S.c);
   const prev=i>0?VIEW[i-1]:(i<0&&VIEW.length?VIEW[VIEW.length-1]:null), next=(i>=0&&i<VIEW.length-1)?VIEW[i+1]:(i<0&&VIEW.length?VIEW[0]:null);
@@ -795,6 +804,7 @@ function quizAct(kind){
   if(!DECK||!DECK.queue.length) return;
   const code=DECK.queue[0];
   if(kind==='reveal'){ DECK.revealed=true; renderQuiz(); return; }
+  if(kind==='hide'){ DECK.revealed=false; renderQuiz(); return; }
   if(kind==='known'){ setRead(code,true); DECK.queue.shift(); DECK.done++; }
   else if(kind==='again'){ DECK.queue.shift(); DECK.queue.push(code); }
   else if(kind==='next'){ DECK.queue.shift(); DECK.done++; }
@@ -811,7 +821,7 @@ function renderQuiz(){
   root.appendChild(h('div',{cls:'quizbar'},sel,
     h('span',{cls:'prog',text:'進捗 '+(DECK?DECK.done:0)+'／'+(DECK?DECK.total:0)}),
     h('button',{cls:'btn',type:'button',text:'山を作り直す',onclick:function(){ensureDeck(true);if(DECK.queue.length){S.c=DECK.queue[0];pushHash(false);}renderQuiz();}})));
-  root.appendChild(h('p',{cls:'hint',text:'現在の「一覧」の絞り込みと並び順で山を作ります（'+VIEW.length+'社）。スペースキーで裏を開く、→キーで次へ。「まだ」は山の最後に回ります。'}));
+  root.appendChild(h('p',{cls:'hint',text:'現在の「一覧」の絞り込みと並び順で山を作ります（'+VIEW.length+'社）。スペースキーで裏を開く（表→裏では、もう一度押すと社名だけに戻る）、→キーで次へ。「まだ」は山の最後に回ります。'}));
   if(!DECK||!DECK.total){ root.appendChild(h('p',{cls:'empty',text:S.qm==='rev'?'出題できる社がありません（本文が作成済みの社が絞り込みに含まれていません）':'出題できる社がありません。一覧の絞り込みを見直してください。'})); return; }
   if(!DECK.queue.length){
     root.appendChild(h('div',{cls:'card'},h('div',{cls:'ctitle',text:'この山は終わりました'}),h('p',{text:DECK.total+'社を終えました。'}),
@@ -822,18 +832,17 @@ function renderQuiz(){
   if(S.c!==DECK.queue[0]){ S.c=DECK.queue[0]; pushHash(false); }
   const card=h('div',{cls:'card'});
   if(S.qm==='fwd'){
-    card.appendChild(h('div',{cls:'ctitle',text:c.display}));
-    card.appendChild(h('div',{cls:'csub',text:c.market}));
-    card.appendChild(partFin(c));
-    if(!DECK.revealed) card.appendChild(h('div',{cls:'cover go',role:'button',tabindex:'0',title:'この会社の1社カードを開く',text:'何を・誰に・どうやって稼ぐ会社か、思い出してから裏を開く',
-      onclick:function(){ setTab('card'); },
-      onkeydown:function(e){ if(e.key==='Enter'){ e.preventDefault(); setTab('card'); } }}));
+    root.appendChild(h('div',{cls:'seg',role:'group','aria-label':'表示の切り替え'},
+      h('button',{cls:'btn'+(DECK.revealed?'':' on'),type:'button','aria-pressed':DECK.revealed?'false':'true',text:'暗記カード（社名だけ）',onclick:function(){quizAct('hide');}}),
+      h('button',{cls:'btn'+(DECK.revealed?' on':''),type:'button','aria-pressed':DECK.revealed?'true':'false',text:'1社カード（全部）',onclick:function(){quizAct('reveal');}})));
+    if(DECK.revealed) fillCard(card,c);
     else {
-      if(c.p&&c.p.one_liner) card.appendChild(h('div',{cls:'oneliner',text:c.p.one_liner}));
-      card.appendChild(partHead(c,false));
-      card.appendChild(partBiz(c,idMask));
-      const g=partGloss(c); if(g) card.appendChild(g);
-      card.appendChild(partMA(c)); card.appendChild(partReadMemo(c));
+      card.appendChild(h('div',{cls:'ctitle',text:c.display}));
+      card.appendChild(h('div',{cls:'csub',text:c.market}));
+      card.appendChild(partFin(c));
+      card.appendChild(h('div',{cls:'cover go',role:'button',tabindex:'0',title:'クリックで1社カードの内容を表示',text:'何を・誰に・どうやって稼ぐ会社か、思い出してから裏を開く',
+        onclick:function(){ quizAct('reveal'); },
+        onkeydown:function(e){ if(e.key==='Enter'){ e.preventDefault(); quizAct('reveal'); } }}));
     }
   } else {
     const mk=maskFor(c);
@@ -862,7 +871,7 @@ document.addEventListener('keydown',function(e){
   if(S.tab!=='quiz') return;
   const t=e.target, tag=t&&t.tagName;
   if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||tag==='BUTTON') { if(!(tag==='BUTTON'&&(e.key==='ArrowRight'))) return; }
-  if(e.key===' '||e.code==='Space'){ e.preventDefault(); if(DECK&&DECK.queue.length&&!DECK.revealed) quizAct('reveal'); }
+  if(e.key===' '||e.code==='Space'){ e.preventDefault(); if(DECK&&DECK.queue.length){ if(!DECK.revealed) quizAct('reveal'); else if(S.qm==='fwd') quizAct('hide'); } }
   else if(e.key==='ArrowRight'){ e.preventDefault(); quizAct('next'); }
 });
 
