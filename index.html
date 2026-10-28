@@ -164,7 +164,15 @@ async function load(){
     "データソース：TDnet適時開示・EDINETコードリスト（法人番号）・JPX上場銘柄一覧・Yahoo Finance（売上・時価総額）。最終更新 "+(m.updated||"—");
   loadExclists();
   render();
+  openFromHash();
 }
+// learn.html 等から index.html#<証券コード> で開かれたとき、その会社を検索して展開する
+function openFromHash(){
+  const m=(location.hash||"").match(/^#([0-9A-Z]{4})$/); if(!m) return;
+  document.getElementById("q").value=m[1]; page=0; render();
+  const el=document.getElementById("c"+m[1]); if(el){ el.classList.add("open"); el.scrollIntoView({block:"start"}); }
+}
+window.addEventListener("hashchange",openFromHash);
 function filtered(){
   const q=norm(document.getElementById("q").value.trim());
   const k=document.getElementById("kind").value;
