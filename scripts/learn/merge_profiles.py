@@ -69,9 +69,12 @@ if body_dir and os.path.isdir(body_dir):
         rec["one_liner"] = bd.get("one_liner", "")
         rec["glossary"] = bd.get("glossary", [])
         rec["ma_policy"] = bd.get("ma_policy", {"text": "", "src": ""})
-        bmap = {b["name"]: b for b in bd.get("businesses", [])}
-        for b in rec["businesses"]:
-            src = bmap.get(b["name"])
+        bbs = bd.get("businesses", [])
+        bmap = {b["name"]: b for b in bbs}
+        same_len = len(bbs) == len(rec["businesses"])
+        for i, b in enumerate(rec["businesses"]):
+            # 事業名で突合し、無ければ（本文側で子会社名などが足された場合）事業数が同じときに限り並び順で突合する
+            src = bmap.get(b["name"]) or (bbs[i] if same_len else None)
             if src:
                 for k in ("who", "what", "how", "money_flow", "sources"):
                     b[k] = src.get(k)
