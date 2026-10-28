@@ -144,6 +144,8 @@ details.gl .gi{margin-bottom:4px;}
 .acts{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0;}
 .acts .btn{padding:10px 16px;}
 .cover{border:1px dashed var(--gray-m); border-radius:4px; padding:16px; text-align:center; color:var(--gray-m); margin:10px 0;}
+.cover.go{cursor:pointer;}
+.cover.go:hover{border-color:var(--olive); color:var(--olive);}
 .fl-box{fill:var(--white); stroke:var(--black); stroke-width:1.5;}
 .fl-t{fill:var(--black); font-size:12px; font-family:"BIZ UDPGothic","BIZ UDPゴシック",sans-serif;}
 .fl-l{fill:var(--black); font-size:11px; font-family:"BIZ UDPGothic","BIZ UDPゴシック",sans-serif; paint-order:stroke; stroke:var(--white); stroke-width:4px; stroke-linejoin:round;}
@@ -796,30 +798,36 @@ function quizAct(kind){
   if(kind==='known'){ setRead(code,true); DECK.queue.shift(); DECK.done++; }
   else if(kind==='again'){ DECK.queue.shift(); DECK.queue.push(code); }
   else if(kind==='next'){ DECK.queue.shift(); DECK.done++; }
+  if(DECK.queue.length){ S.c=DECK.queue[0]; pushHash(false); }
   DECK.revealed=false; renderQuiz(); window.scrollTo(0,0);
 }
 function renderQuiz(){
   const root=$('v-quiz'); root.replaceChildren(); flowHosts=[];
   ensureDeck(false);
+  // 1社カードで開いていた社が山にあれば、その社から出題する（1社カードと表示する社をそろえる）
+  if(DECK&&DECK.queue.length&&S.c){ const k=DECK.queue.indexOf(S.c); if(k>0){ DECK.queue.splice(k,1); DECK.queue.unshift(S.c); DECK.revealed=false; } }
   const sel=h('select',{'aria-label':'出題の向き'},h('option',{value:'fwd',text:'表→裏（社名から思い出す）'}),h('option',{value:'rev',text:'逆（事業から社名を当てる）'}));
   sel.value=S.qm; sel.addEventListener('change',function(){ S.qm=sel.value; pushHash(false); renderQuiz(); });
   root.appendChild(h('div',{cls:'quizbar'},sel,
     h('span',{cls:'prog',text:'進捗 '+(DECK?DECK.done:0)+'／'+(DECK?DECK.total:0)}),
-    h('button',{cls:'btn',type:'button',text:'山を作り直す',onclick:function(){ensureDeck(true);renderQuiz();}})));
+    h('button',{cls:'btn',type:'button',text:'山を作り直す',onclick:function(){ensureDeck(true);if(DECK.queue.length){S.c=DECK.queue[0];pushHash(false);}renderQuiz();}})));
   root.appendChild(h('p',{cls:'hint',text:'現在の「一覧」の絞り込みと並び順で山を作ります（'+VIEW.length+'社）。スペースキーで裏を開く、→キーで次へ。「まだ」は山の最後に回ります。'}));
   if(!DECK||!DECK.total){ root.appendChild(h('p',{cls:'empty',text:S.qm==='rev'?'出題できる社がありません（本文が作成済みの社が絞り込みに含まれていません）':'出題できる社がありません。一覧の絞り込みを見直してください。'})); return; }
   if(!DECK.queue.length){
     root.appendChild(h('div',{cls:'card'},h('div',{cls:'ctitle',text:'この山は終わりました'}),h('p',{text:DECK.total+'社を終えました。'}),
-      h('div',{cls:'acts'},h('button',{cls:'btn pri',type:'button',text:'もう一度山を作る',onclick:function(){ensureDeck(true);renderQuiz();}}))));
+      h('div',{cls:'acts'},h('button',{cls:'btn pri',type:'button',text:'もう一度山を作る',onclick:function(){ensureDeck(true);if(DECK.queue.length){S.c=DECK.queue[0];pushHash(false);}renderQuiz();}}))));
     return;
   }
   const c=BY[DECK.queue[0]];
+  if(S.c!==DECK.queue[0]){ S.c=DECK.queue[0]; pushHash(false); }
   const card=h('div',{cls:'card'});
   if(S.qm==='fwd'){
     card.appendChild(h('div',{cls:'ctitle',text:c.display}));
     card.appendChild(h('div',{cls:'csub',text:c.market}));
     card.appendChild(partFin(c));
-    if(!DECK.revealed) card.appendChild(h('div',{cls:'cover',text:'何を・誰に・どうやって稼ぐ会社か、思い出してから裏を開く'}));
+    if(!DECK.revealed) card.appendChild(h('div',{cls:'cover go',role:'button',tabindex:'0',title:'この会社の1社カードを開く',text:'何を・誰に・どうやって稼ぐ会社か、思い出してから裏を開く',
+      onclick:function(){ setTab('card'); },
+      onkeydown:function(e){ if(e.key==='Enter'){ e.preventDefault(); setTab('card'); } }}));
     else {
       if(c.p&&c.p.one_liner) card.appendChild(h('div',{cls:'oneliner',text:c.p.one_liner}));
       card.appendChild(partHead(c,false));
