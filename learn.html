@@ -898,8 +898,10 @@ function setupIO(){
 function init(){
   loadStore();
   S=defState();
-  const initial=location.hash.replace(/^#/,'')||store.settings.hash||'';
-  S=fromHash(initial);
+  const urlHash=location.hash.replace(/^#/,'');
+  S=fromHash(urlHash||store.settings.hash||'');
+  // URLに指定がないときは、絞り込み・並べ替えだけ前回のまま残し、一覧の先頭から始める
+  if(!urlHash){ S.tab='list'; S.c=''; }
   const sortSel=$('sort');
   SORTS.forEach(function(s){ sortSel.appendChild(h('option',{value:s[0],text:'並べ替え：'+s[1]})); });
   sortSel.addEventListener('change',function(){S.sort=sortSel.value;onFilter();});
