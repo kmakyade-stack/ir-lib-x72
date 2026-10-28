@@ -1,7 +1,7 @@
 """検品用：本文JSONを読みやすく表示する。
 使い方: python show_body.py <body_dir> <skeleton_dir> <companies.json> code1 code2 ...   （codes の代わりに --random N --type IT05 も可）
 """
-import json, os, random, sys
+import json, os, random, re, sys
 
 body_dir, sk_dir, comp_path = sys.argv[1], sys.argv[2], sys.argv[3]
 args = sys.argv[4:]
@@ -12,7 +12,7 @@ if "--random" in args:
     t = args[args.index("--type") + 1] if "--type" in args else None
     pool = []
     for f in os.listdir(body_dir):
-        if not f.endswith(".json"):
+        if not re.fullmatch(r"[0-9A-Z]{4}\.json", f):
             continue
         c = f[:-5]
         if t:
