@@ -10,12 +10,13 @@ today = datetime.date.today().isoformat()
 
 comps = json.load(open(f"{repo}/data/companies.json", encoding="utf-8"))
 code2ed = {c["code"]: c.get("edinet", "") for c in comps}
+ed2code = {v: k for k, v in code2ed.items()}
 fin_src = json.load(open(f"{edinet_out}/fin.json", encoding="utf-8"))
 
 # fin.json（公開用）：証券コードをキーに、円のまま
 fin_out = {}
 for e, f in fin_src.items():
-    code = (f.get("secCode") or "")[:4]
+    code = (f.get("secCode") or "")[:4] or ed2code.get(e, "")
     if not code:
         continue
     fin_out[code] = {"sales": f["sales"], "op": f["op"], "scope": f["sales_scope"], "standard": f["standard"],

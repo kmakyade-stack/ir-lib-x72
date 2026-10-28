@@ -1,16 +1,31 @@
 """骨格・本文の生成に使う1社1ファイルの入力（Markdown）を組み立てる。
 
-使い方: python build_inputs.py <repo> <edinet_out> <out_dir> [codes...]
+使い方: python build_inputs.py <repo> <edinet_out> <out_dir> [--mode skeleton|body] [codes...]
   <repo>       data/companies.json・documents.json のあるリポジトリ
   <edinet_out> edinet_yuho.py --fin の出力フォルダ（text/{EDINET}.txt・fin.json・index.jsonl）
   <out_dir>    出力先。{code}.md を1社1ファイルで書く
+  --mode       skeleton＝事業分割・分類に要る節だけ（事業の内容・関係会社・報告セグメント・注記）
+               body＝本文に要る節（skeleton＋経営方針・MD&A。リスク・人材・従業員は落とす）。既定は body
   codes        省略時は全社
 """
-import json, os, sys
+import json, os, re, sys
 
-repo, edinet_out, out_dir = sys.argv[1], sys.argv[2], sys.argv[3]
-only = set(sys.argv[4:])
+args = [a for a in sys.argv[1:]]
+mode = "body"
+if "--mode" in args:
+    i = args.index("--mode")
+    mode = args[i + 1]
+    del args[i:i + 2]
+repo, edinet_out, out_dir = args[0], args[1], args[2]
+only = set(args[3:])
 os.makedirs(out_dir, exist_ok=True)
+
+KEEP = {
+    "skeleton": ["事業の内容", "関係会社の状況", "報告セグメントの概要", "セグメント情報等（注記）"],
+    "body": ["事業の内容", "関係会社の状況", "報告セグメントの概要", "セグメント情報等（注記）", "経営方針、経営環境及び対処すべき課題等",
+             "経営者による財政状態、経営成績及びキャッシュ・フローの状況の分析"],
+}[mode]
+CAP = {"セグメント情報等（注記）": 1500, "経営者による財政状態、経営成績及びキャッシュ・フローの状況の分析": 2500}
 
 comps = json.load(open(f"{repo}/data/companies.json", encoding="utf-8"))
 docs = json.load(open(f"{repo}/data/documents.json", encoding="utf-8"))
@@ -19,8 +34,18 @@ by_code = {}
 for d in docs:
     by_code.setdefault(d["code"], []).append(d)
 
+
 def yen_m(v):
     return "" if v is None else f"{round(v / 1e6):,}百万円"
+
+
+def sections(text):
+    """edinet_yuho.py の text を【見出し】ごとに分ける。先頭のヘッダ行も返す"""
+    parts = re.split(r"\n【([^】]+)】\n", "\n" + text)
+    head = parts[0].strip()
+    secs = {parts[i]: parts[i + 1].strip() for i in range(1, len(parts) - 1, 2)}
+    return head, secs
+
 
 n = 0
 for c in comps:
@@ -31,7 +56,7 @@ for c in comps:
     tpath = f"{edinet_out}/text/{e}.txt"
     if not os.path.exists(tpath):
         continue
-    text = open(tpath, encoding="utf-8").read()
+    head, secs = sections(open(tpath, encoding="utf-8").read())
     f = fin.get(e, {})
     lines = [f"# {c['name']}（証券コード {code}・EDINET {e}・{c['market']}）", ""]
     lines += ["## 財務（有報・公式EDINET API）",
@@ -45,21 +70,21 @@ for c in comps:
     else:
         lines.append("- 報告セグメント別の数値：なし（単一セグメント）")
     lines.append("")
-    # IRライブラリの要約（新しい順に最大4件・M&A開示はタイトルのみ3件）
     ds = sorted(by_code.get(code, []), key=lambda d: d["date"], reverse=True)
     summ = [d for d in ds if d["kind"] != "M&A開示" and d.get("summary")][:4]
     ma = [d for d in ds if d["kind"] == "M&A開示"][:3]
     lines.append("## IRライブラリの要約（決算説明資料・中計・成長可能性）")
-    if summ:
-        for d in summ:
-            lines.append(f"- {d['date']}｛{d['kind']}｝{d['title']}：{d['summary']}")
-    else:
-        lines.append("- なし")
+    lines += [f"- {d['date']}｛{d['kind']}｝{d['title']}：{d['summary']}" for d in summ] or ["- なし"]
     lines.append("## 直近のM&A開示（タイトルのみ）")
     lines += [f"- {d['date']} {d['title']}" for d in ma] or ["- なし"]
     lines.append("")
-    lines.append("## 有報の本文（edinet_yuho.py の抜き出し）")
-    lines.append(text)
+    lines.append("## 有報の本文（公式EDINET API）")
+    lines.append(head)
+    for k in KEEP:
+        v = secs.get(k, "（記載なし）")
+        if k in CAP:
+            v = v[:CAP[k]]
+        lines += ["", f"【{k}】", v]
     open(f"{out_dir}/{code}.md", "w", encoding="utf-8").write("\n".join(lines))
     n += 1
-print("inputs:", n)
+print("inputs:", n, "mode:", mode)
