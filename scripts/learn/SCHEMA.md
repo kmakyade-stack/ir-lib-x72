@@ -41,6 +41,7 @@
   ],
   "glossary": [{"term": "準委任", "plain": "成果物ではなく作業時間に対して報酬を払う契約。完成責任は負わない"}],
   "ma_policy": {"text": "有報「経営方針と課題」等に書かれたM&A・提携の方針を1文。記載がなければ \"\"", "src": "有報：経営方針と課題"},
+  "mnemonic": {"text": "覚え方のTips（80字以内）。作れない社はこの項目自体がない", "kind": "由来 | 成り立ち | 語の意味", "basis": "有報の沿革 | 社名の語の意味 など"},
   "status": {"skeleton": "done", "body": "pending"},
   "generated": {"skeleton": "2026-10-28", "body": ""},
   "model": "sonnet"
@@ -53,6 +54,7 @@
 |---|---|---|
 | 骨格（skeleton） | main_type・sub_type・non_it・businesses[].name/entity/segment_member/share_pct/share_src/type/customer/vertical/pricing・status.skeleton | Sonnet（区分を決めるため全社先に） |
 | 本文（body） | one_liner・businesses[].who/what/how/money_flow/sources・glossary・ma_policy・status.body | Sonnet（区分ごと）→ Fableが区分ごとに30社を抜き取り検品 |
+| 覚え方（tips） | mnemonic | Sonnet（`TIPS_PROMPT.md`・有報の沿革を入力）→ `tips_merge.py` が根拠の一節を原文と照合 → 高性能モデルが抜き取り検品 |
 
 ### 列挙の正本
 

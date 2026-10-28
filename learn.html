@@ -145,6 +145,9 @@ details.gl .gi{margin-bottom:4px;}
 .acts .btn{padding:10px 16px;}
 .cover{border:1px dashed var(--gray-m); border-radius:4px; padding:16px; text-align:center; color:var(--gray-m); margin:10px 0;}
 .cover.go{cursor:pointer;}
+.tip{border-left:3px solid var(--olive); background:var(--white); padding:6px 10px; margin:0 0 10px; border-top:1px solid var(--gray-l); border-right:1px solid var(--gray-l); border-bottom:1px solid var(--gray-l);}
+.tiplabel{display:inline-block; font-size:11px; color:var(--white); background:var(--olive); border-radius:3px; padding:0 6px; margin-right:8px;}
+.tipsrc{font-size:11px; color:var(--gray-m); margin-top:2px;}
 .seg{display:inline-flex; margin:0 0 8px;}
 .seg .btn{border-radius:0; margin-right:-1px;}
 .seg .btn:first-child{border-radius:4px 0 0 4px;}
@@ -187,8 +190,7 @@ details.gl .gi{margin-bottom:4px;}
 </div>
 <div class="tabs" role="tablist">
   <button class="tab" type="button" data-tab="list">一覧</button>
-  <button class="tab" type="button" data-tab="card">1社カード</button>
-  <button class="tab" type="button" data-tab="quiz">暗記モード</button>
+  <button class="tab" type="button" data-tab="quiz">暗記カード</button>
 </div>
 <div id="v-list">
   <div class="qrow">
@@ -205,7 +207,6 @@ details.gl .gi{margin-bottom:4px;}
   </div>
   <div id="list"></div>
 </div>
-<div id="v-card" hidden></div>
 <div id="v-quiz" hidden></div>
 
 <script>
@@ -313,6 +314,7 @@ function buildDocs(arr){
 
 /* ===== 状態とハッシュ ===== */
 let S;
+let WANT_REVEAL=false;  // 次に暗記カードを描くとき、その社を全部表示で開く
 function defState(){
   return {tab:'list',q:'',ty:new Set(TYPE_KEYS.filter(function(k){return k!=='非IT';})),tm:'main',cu:new Set(),pr:new Set(),vt:'',mk:new Set(),bd:'',rd:'',
     sl:'',sh:'',ol:'',oh:'',ml:'',mh:'',cl:'',ch:'',sort:'mcap',dir:'desc',grp:false,c:'',qm:'fwd'};
@@ -333,8 +335,9 @@ function fromHash(str){
   ['cu','pr','mk'].forEach(function(k){ if(p.has(k)) d[k]=new Set(p.get(k).split(',').filter(Boolean)); });
   if(p.has('ty')) d.ty=new Set(p.get('ty').split(',').filter(Boolean));
   d.grp=p.get('grp')==='1';
-  if(['list','card','quiz'].indexOf(d.tab)<0) d.tab='list';
   if(d.tab==='list'&&p.has('c')&&!p.has('tab')) d.tab='card';
+  if(d.tab==='card'){ d.tab='quiz'; d.qm='fwd'; WANT_REVEAL=true; }  // 旧「1社カード」のURLは暗記カードの全部表示で開く
+  if(['list','quiz'].indexOf(d.tab)<0) d.tab='list';
   if(['fwd','rev'].indexOf(d.qm)<0) d.qm='fwd';
   if(['asc','desc'].indexOf(d.dir)<0) d.dir='desc';
   if(!SORTS.some(function(s){return s[0]===d.sort;})) d.sort='mcap';
@@ -411,13 +414,12 @@ function setTab(tab,push){
 }
 function openCard(code){
   if(S.tab==='list') listScroll=window.scrollY;
-  S.c=code; S.tab='card'; pushHash(true); renderAll(); window.scrollTo(0,0);
+  S.c=code; S.tab='quiz'; S.qm='fwd'; WANT_REVEAL=true; pushHash(true); renderAll(); window.scrollTo(0,0);
 }
 function renderAll(){
   document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('on',t.getAttribute('data-tab')===S.tab); t.setAttribute('aria-selected',t.getAttribute('data-tab')===S.tab?'true':'false'); });
-  $('v-list').hidden=S.tab!=='list'; $('v-card').hidden=S.tab!=='card'; $('v-quiz').hidden=S.tab!=='quiz';
+  $('v-list').hidden=S.tab!=='list'; $('v-quiz').hidden=S.tab!=='quiz';
   if(S.tab==='list') renderList();
-  else if(S.tab==='card') renderCard();
   else renderQuiz();
 }
 function onFilter(){
@@ -757,9 +759,16 @@ function partReadMemo(c){
   return w;
 }
 
-/* ===== B. 1社カード ===== */
-/* 1社カードの中身（1社カードと暗記モードの「1社カード表示」で共通） */
+/* ===== B. 覚え方のTips ===== */
+function partTip(c){
+  const m=c.p&&c.p.mnemonic;
+  if(!m||!m.text) return null;
+  return h('div',{cls:'tip'},h('span',{cls:'tiplabel',text:'覚え方'}),h('span',{text:m.text}),
+    m.basis?h('div',{cls:'tipsrc',text:'根拠：'+m.basis}):null);
+}
+/* 暗記カードの全部表示 */
 function fillCard(card,c){
+  const tp=partTip(c); if(tp) card.appendChild(tp);
   card.appendChild(partHead(c));
   if(c.p&&c.p.one_liner) card.appendChild(h('div',{cls:'oneliner',text:c.p.one_liner}));
   card.appendChild(partFin(c));
@@ -773,25 +782,6 @@ function fillCard(card,c){
   card.appendChild(partMA(c));
   card.appendChild(partReadMemo(c));
 }
-function renderCard(){
-  const root=$('v-card'); root.replaceChildren(); flowHosts=[];
-  const c=BY[S.c];
-  const bar=h('div',{cls:'nav',style:'margin:0 0 10px'},
-    h('button',{cls:'btn',type:'button',text:'← 一覧へ',onclick:function(){setTab('list');}}),
-    h('span',{cls:'meta',style:'margin:0',text:VIEW.indexOf(S.c)>=0?(VIEW.indexOf(S.c)+1)+' ／ '+VIEW.length:'（現在の絞り込みに含まれない社）'}));
-  root.appendChild(bar);
-  if(!c){ root.appendChild(h('p',{cls:'empty',text:'一覧から社名の行をクリックすると、ここに1社カードが開きます。'})); return; }
-  const card=h('div',{cls:'card'});
-  fillCard(card,c);
-  root.appendChild(card);
-  const i=VIEW.indexOf(S.c);
-  const prev=i>0?VIEW[i-1]:(i<0&&VIEW.length?VIEW[VIEW.length-1]:null), next=(i>=0&&i<VIEW.length-1)?VIEW[i+1]:(i<0&&VIEW.length?VIEW[0]:null);
-  root.appendChild(h('div',{cls:'nav'},
-    h('button',{cls:'btn',type:'button',text:'← 前へ',disabled:prev?null:true,onclick:function(){if(prev)openCard(prev);}}),
-    h('button',{cls:'btn',type:'button',text:'次へ →',disabled:next?null:true,onclick:function(){if(next)openCard(next);}})));
-  drawAllFlows(true);
-}
-
 /* ===== C. 暗記モード ===== */
 let DECK=null;
 function hasBody(c){ return !!(c&&c.p&&(c.p.one_liner||c.biz.some(function(b){return b.who||b.what||b.how;}))); }
@@ -814,8 +804,14 @@ function quizAct(kind){
 function renderQuiz(){
   const root=$('v-quiz'); root.replaceChildren(); flowHosts=[];
   ensureDeck(false);
-  // 1社カードで開いていた社が山にあれば、その社から出題する（1社カードと表示する社をそろえる）
+  // 一覧で選んだ社（S.c）が山にあれば、その社から出題する
   if(DECK&&DECK.queue.length&&S.c){ const k=DECK.queue.indexOf(S.c); if(k>0){ DECK.queue.splice(k,1); DECK.queue.unshift(S.c); DECK.revealed=false; } }
+  if(WANT_REVEAL){
+    WANT_REVEAL=false;
+    // 絞り込みに入っていない社をURLで開いたときも、その社を山の先頭に差し込んで表示する
+    if(DECK&&S.c&&BY[S.c]&&DECK.queue[0]!==S.c){ DECK.queue.unshift(S.c); }
+    if(DECK&&DECK.queue[0]===S.c) DECK.revealed=true;
+  }
   const sel=h('select',{'aria-label':'出題の向き'},h('option',{value:'fwd',text:'表→裏（社名から思い出す）'}),h('option',{value:'rev',text:'逆（事業から社名を当てる）'}));
   sel.value=S.qm; sel.addEventListener('change',function(){ S.qm=sel.value; pushHash(false); renderQuiz(); });
   root.appendChild(h('div',{cls:'quizbar'},sel,
@@ -833,14 +829,15 @@ function renderQuiz(){
   const card=h('div',{cls:'card'});
   if(S.qm==='fwd'){
     root.appendChild(h('div',{cls:'seg',role:'group','aria-label':'表示の切り替え'},
-      h('button',{cls:'btn'+(DECK.revealed?'':' on'),type:'button','aria-pressed':DECK.revealed?'false':'true',text:'暗記カード（社名だけ）',onclick:function(){quizAct('hide');}}),
-      h('button',{cls:'btn'+(DECK.revealed?' on':''),type:'button','aria-pressed':DECK.revealed?'true':'false',text:'1社カード（全部）',onclick:function(){quizAct('reveal');}})));
+      h('button',{cls:'btn'+(DECK.revealed?'':' on'),type:'button','aria-pressed':DECK.revealed?'false':'true',text:'社名だけ',onclick:function(){quizAct('hide');}}),
+      h('button',{cls:'btn'+(DECK.revealed?' on':''),type:'button','aria-pressed':DECK.revealed?'true':'false',text:'全部表示',onclick:function(){quizAct('reveal');}})));
     if(DECK.revealed) fillCard(card,c);
     else {
+      const tp=partTip(c); if(tp) card.appendChild(tp);
       card.appendChild(h('div',{cls:'ctitle',text:c.display}));
       card.appendChild(h('div',{cls:'csub',text:c.market}));
       card.appendChild(partFin(c));
-      card.appendChild(h('div',{cls:'cover go',role:'button',tabindex:'0',title:'クリックで1社カードの内容を表示',text:'何を・誰に・どうやって稼ぐ会社か、思い出してから裏を開く',
+      card.appendChild(h('div',{cls:'cover go',role:'button',tabindex:'0',title:'クリックで全部表示',text:'何を・誰に・どうやって稼ぐ会社か、思い出してから裏を開く',
         onclick:function(){ quizAct('reveal'); },
         onkeydown:function(e){ if(e.key==='Enter'){ e.preventDefault(); quizAct('reveal'); } }}));
     }
@@ -851,6 +848,7 @@ function renderQuiz(){
     card.appendChild(partBiz(c,mk));
     if(DECK.revealed){
       card.appendChild(h('div',{cls:'sec'},h('h2',{text:'答え'}),partHead(c)));
+      const tp=partTip(c); if(tp) card.appendChild(tp);
       card.appendChild(partFin(c));
       const g=partGloss(c); if(g) card.appendChild(g);
       card.appendChild(partMA(c)); card.appendChild(partReadMemo(c));

@@ -14,11 +14,16 @@
 3. **骨格（事業分割・分類）**：Sonnet のサブエージェントに `prompts/skeleton.md` と `<in_dir>/{code}.md` を10社ずつ渡し、`<skeleton_dir>/{code}.json` を書かせる。`python scripts/learn/validate.py skeleton <skeleton_dir>` でNGを直す
 4. **本文**：区分ごと（IT04→IT05→IT01→IT03→残り）に `prompts/body.md` で同様に生成し、`validate.py body` で検査。区分ごとに高性能モデルが30社を抜き取り検品する
 5. **統合**：`python scripts/learn/merge_profiles.py <repo> <edinet_out> <skeleton_dir> <body_dir>` → `data/profiles.json`・`data/fin.json`
-6. commit → push → GitHub Pages で `learn.html` を確認
+6. **覚え方のTips**（社名・成り立ちから事業を思い出す手がかり。作れる社だけ）
+   - 沿革の取得：`python scripts/learn/fetch_history.py <repo> <history_dir> [--codes …]`（取得済みは飛ばす。2本並行なら片方に `--reverse`）
+   - 入力：`python scripts/learn/tips_input.py <repo> <history_dir> <in_dir> <codes_file|all> --per 20 --prefix b`
+   - 生成：Sonnet のサブエージェントに `TIPS_PROMPT.md` と入力1束を渡し、`<tips_dir>/{束}.json` を書かせる。こじつけになる社は null（目安：Tipsが付くのは3割前後）
+   - 照合と取り込み：`python scripts/learn/tips_merge.py <repo> <history_dir> <tips_dir>`（由来・成り立ちは根拠の一節が原文にあるものだけ入る。まず `--dry` で確認）。高性能モデルが本文の事実を抜き取りで入力と突き合わせる
+7. commit → push → GitHub Pages で `learn.html` を確認
 
 ## 毎月1日（新規上場の反映）
 
-日次更新タスクの月次手順で `data/companies.json` に加わった社について、上の1〜5を**その社だけ**行う（`build_inputs.py` の末尾に証券コードを並べる）。上場廃止で消えた社は `profiles.json`・`fin.json` からも消す。
+日次更新タスクの月次手順で `data/companies.json` に加わった社について、上の1〜6を**その社だけ**行う（`build_inputs.py` の末尾に証券コードを並べる）。上場廃止で消えた社は `profiles.json`・`fin.json` からも消す。
 
 ## 守ること
 
