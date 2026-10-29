@@ -145,6 +145,9 @@ details.gl .gi{margin-bottom:4px;}
 .acts .btn{padding:10px 16px;}
 .cover{border:1px dashed var(--gray-m); border-radius:4px; padding:16px; text-align:center; color:var(--gray-m); margin:10px 0;}
 .cover.go{cursor:pointer;}
+.qnav{display:flex; justify-content:space-between; align-items:center; gap:8px; margin:0 0 8px;}
+.qnav .btn{padding:8px 16px;}
+.note{font-size:11px; color:var(--gray-m);}
 .tip{border-left:3px solid var(--olive); background:var(--white); padding:6px 10px; margin:0 0 10px; border-top:1px solid var(--gray-l); border-right:1px solid var(--gray-l); border-bottom:1px solid var(--gray-l);}
 .tiplabel{display:inline-block; font-size:11px; color:var(--white); background:var(--olive); border-radius:3px; padding:0 6px; margin-right:8px;}
 .tipsrc{font-size:11px; color:var(--gray-m); margin-top:2px;}
@@ -173,6 +176,7 @@ details.gl .gi{margin-bottom:4px;}
   <a href="index.html">IRライブラリへ</a>
   <button class="btn sm" id="btnExport" type="button">書き出し</button>
   <button class="btn sm" id="btnImport" type="button">読み込み</button>
+  <span class="note">既読・メモはこの端末のブラウザにだけ保存されます（他の人の画面には出ません。別の端末へ移すときは書き出し→読み込み）</span>
   <span class="msg" id="topMsg"></span>
 </div>
 <div class="io" id="ioPanel" hidden>
@@ -791,8 +795,19 @@ function ensureDeck(force){
   if(force||!DECK||DECK.sig!==sig) DECK={sig:sig,queue:arr.slice(),total:arr.length,done:0,revealed:false};
 }
 function quizAct(kind){
-  if(!DECK||!DECK.queue.length) return;
+  if(!DECK) return;
+  if(kind==='prev'){
+    // たどった順（DECK.hist）を1つ戻す。「まだ」で山の最後へ回した社は、最後から抜いて先頭へ戻す
+    if(!DECK.hist||!DECK.hist.length) return;
+    const last=DECK.hist.pop();
+    if(last.kind==='again'){ const i=DECK.queue.lastIndexOf(last.code); if(i>=0) DECK.queue.splice(i,1); }
+    else DECK.done=Math.max(0,DECK.done-1);
+    DECK.queue.unshift(last.code); S.c=last.code; pushHash(false);
+    DECK.revealed=false; renderQuiz(); window.scrollTo(0,0); return;
+  }
+  if(!DECK.queue.length) return;
   const code=DECK.queue[0];
+  if(kind==='known'||kind==='again'||kind==='next') (DECK.hist=DECK.hist||[]).push({code:code,kind:kind});
   if(kind==='reveal'){ DECK.revealed=true; renderQuiz(); return; }
   if(kind==='hide'){ DECK.revealed=false; renderQuiz(); return; }
   if(kind==='known'){ setRead(code,true); DECK.queue.shift(); DECK.done++; }
@@ -800,6 +815,13 @@ function quizAct(kind){
   else if(kind==='next'){ DECK.queue.shift(); DECK.done++; }
   if(DECK.queue.length){ S.c=DECK.queue[0]; pushHash(false); }
   DECK.revealed=false; renderQuiz(); window.scrollTo(0,0);
+}
+function quizNav(){
+  const hasPrev=!!(DECK&&DECK.hist&&DECK.hist.length), hasNext=!!(DECK&&DECK.queue.length);
+  return h('div',{cls:'qnav'},
+    h('button',{cls:'btn',type:'button',text:'← 前へ',disabled:hasPrev?null:true,onclick:function(){quizAct('prev');}}),
+    h('span',{cls:'note',text:'スマホは左右にスワイプでも移動'}),
+    h('button',{cls:'btn',type:'button',text:'次へ →',disabled:hasNext?null:true,onclick:function(){quizAct('next');}}));
 }
 function renderQuiz(){
   const root=$('v-quiz'); root.replaceChildren(); flowHosts=[];
@@ -817,15 +839,17 @@ function renderQuiz(){
   root.appendChild(h('div',{cls:'quizbar'},sel,
     h('span',{cls:'prog',text:'進捗 '+(DECK?DECK.done:0)+'／'+(DECK?DECK.total:0)}),
     h('button',{cls:'btn',type:'button',text:'山を作り直す',onclick:function(){ensureDeck(true);if(DECK.queue.length){S.c=DECK.queue[0];pushHash(false);}renderQuiz();}})));
-  root.appendChild(h('p',{cls:'hint',text:'現在の「一覧」の絞り込みと並び順で山を作ります（'+VIEW.length+'社）。スペースキーで裏を開く（表→裏では、もう一度押すと社名だけに戻る）、→キーで次へ。「まだ」は山の最後に回ります。'}));
+  root.appendChild(h('p',{cls:'hint',text:'現在の「一覧」の絞り込みと並び順で山を作ります（'+VIEW.length+'社）。スペースキーで裏を開く（表→裏では、もう一度押すと社名だけに戻る）、→キーで次へ、←キーで前へ（スマホは左右にスワイプ）。「まだ」は山の最後に回ります。'}));
   if(!DECK||!DECK.total){ root.appendChild(h('p',{cls:'empty',text:S.qm==='rev'?'出題できる社がありません（本文が作成済みの社が絞り込みに含まれていません）':'出題できる社がありません。一覧の絞り込みを見直してください。'})); return; }
   if(!DECK.queue.length){
+    root.appendChild(quizNav());
     root.appendChild(h('div',{cls:'card'},h('div',{cls:'ctitle',text:'この山は終わりました'}),h('p',{text:DECK.total+'社を終えました。'}),
       h('div',{cls:'acts'},h('button',{cls:'btn pri',type:'button',text:'もう一度山を作る',onclick:function(){ensureDeck(true);if(DECK.queue.length){S.c=DECK.queue[0];pushHash(false);}renderQuiz();}}))));
     return;
   }
   const c=BY[DECK.queue[0]];
   if(S.c!==DECK.queue[0]){ S.c=DECK.queue[0]; pushHash(false); }
+  root.appendChild(quizNav());
   const card=h('div',{cls:'card'});
   if(S.qm==='fwd'){
     root.appendChild(h('div',{cls:'seg',role:'group','aria-label':'表示の切り替え'},
@@ -861,6 +885,7 @@ function renderQuiz(){
     acts.appendChild(h('button',{cls:'btn pri',type:'button',text:'覚えた（読了にする）',onclick:function(){quizAct('known');}}));
     acts.appendChild(h('button',{cls:'btn',type:'button',text:'まだ（山の最後へ）',onclick:function(){quizAct('again');}}));
   }
+  acts.appendChild(h('button',{cls:'btn',type:'button',text:'← 前へ',disabled:(DECK.hist&&DECK.hist.length)?null:true,onclick:function(){quizAct('prev');}}));
   acts.appendChild(h('button',{cls:'btn',type:'button',text:'次へ →',onclick:function(){quizAct('next');}}));
   root.appendChild(acts);
   drawAllFlows(true);
@@ -868,10 +893,38 @@ function renderQuiz(){
 document.addEventListener('keydown',function(e){
   if(S.tab!=='quiz') return;
   const t=e.target, tag=t&&t.tagName;
-  if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||tag==='BUTTON') { if(!(tag==='BUTTON'&&(e.key==='ArrowRight'))) return; }
+  if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||tag==='BUTTON') { if(!(tag==='BUTTON'&&(e.key==='ArrowRight'||e.key==='ArrowLeft'))) return; }
   if(e.key===' '||e.code==='Space'){ e.preventDefault(); if(DECK&&DECK.queue.length){ if(!DECK.revealed) quizAct('reveal'); else if(S.qm==='fwd') quizAct('hide'); } }
   else if(e.key==='ArrowRight'){ e.preventDefault(); quizAct('next'); }
+  else if(e.key==='ArrowLeft'){ e.preventDefault(); quizAct('prev'); }
 });
+/* スマホ：暗記カードを左にスワイプで次へ、右にスワイプで前へ */
+(function(){
+  let sx=0, sy=0, st=0, ok=false;
+  function inHScroll(el){
+    // 横にスクロールできる部分（お金の流れ図など）の中で始まった操作はスワイプとして扱わない
+    for(let n=el; n&&n.id!=='v-quiz'; n=n.parentElement){
+      if(n.scrollWidth>n.clientWidth+2){ const ox=getComputedStyle(n).overflowX; if(ox==='auto'||ox==='scroll') return true; }
+    }
+    return false;
+  }
+  document.addEventListener('touchstart',function(e){
+    ok=false;
+    if(S.tab!=='quiz'||e.touches.length!==1) return;
+    const t=e.target; if(!t.closest||!t.closest('#v-quiz')) return;
+    if(t.closest('input,textarea,select')) return;
+    const p=e.touches[0];
+    if(p.clientX<24) return;  // 画面の左端はブラウザの「戻る」操作に譲る
+    if(inHScroll(t)) return;
+    sx=p.clientX; sy=p.clientY; st=Date.now(); ok=true;
+  },{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(!ok) return; ok=false;
+    const p=e.changedTouches[0], dx=p.clientX-sx, dy=p.clientY-sy;
+    if(Date.now()-st>800||Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.5) return;
+    quizAct(dx<0?'next':'prev');
+  },{passive:true});
+})();
 
 /* ===== 書き出し・読み込み ===== */
 function flash(id,text,isErr){ const el=$(id); el.textContent=text; el.className=isErr?'err':'msg'; clearTimeout(el._t); el._t=setTimeout(function(){el.textContent='';},4000); }
